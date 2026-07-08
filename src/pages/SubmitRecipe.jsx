@@ -11,6 +11,7 @@ const CATEGORIES = [
   { value: 'simple_carbs', label: 'Simple Carbs' },
   { value: 'complex_carbs', label: 'Complex Carbs' },
   { value: 'fiber', label: 'Fiber-Rich' },
+  { value: 'supplements', label: 'Supplement' },
   { value: 'recipes', label: 'Recipe' },
 ];
 
