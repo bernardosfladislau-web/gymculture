@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import NutritionCard from '@/components/NutritionCard';
+import NutritionCarousel from '@/components/NutritionCarousel';
 
 const CATEGORIES = [
   { key: 'protein', label: 'Proteins', desc: 'Lean, high-quality sources' },
@@ -59,11 +60,7 @@ export default function NutritionHub() {
                   <h2 className="text-lg font-heading font-light text-gradient-gold">{cat.label}</h2>
                   <p className="text-xs text-muted-foreground">{cat.desc}</p>
                 </div>
-                <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x pb-2 -mx-5 px-5">
-                  {catItems.map((item) => (
-                    <NutritionCard key={item.id} item={item} onClick={() => navigate(`/nutrition-hub/${item.id}`)} />
-                  ))}
-                </div>
+                <NutritionCarousel items={catItems} onItemClick={(item) => navigate(`/nutrition-hub/${item.id}`)} />
               </div>
             );
           })}

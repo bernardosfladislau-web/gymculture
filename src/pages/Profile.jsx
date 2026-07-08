@@ -75,6 +75,14 @@ export default function Profile() {
     setProfileUser((u) => ({ ...u, is_private: newVal }));
   };
 
+  const handleLogout = async () => {
+    try {
+      await base44.auth.logout('/');
+    } catch {
+      window.location.href = '/login';
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -167,7 +175,7 @@ export default function Profile() {
               <span className="text-sm font-medium">Admin Panel</span>
             </button>
           )}
-          <button onClick={() => base44.auth.logout('/')} className="w-full glass-card rounded-2xl p-4 flex items-center gap-3">
+          <button onClick={handleLogout} className="w-full glass-card rounded-2xl p-4 flex items-center gap-3">
             <LogOut size={18} className="text-destructive" />
             <span className="text-sm font-medium text-destructive">Sign Out</span>
           </button>

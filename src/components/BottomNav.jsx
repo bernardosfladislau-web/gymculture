@@ -5,7 +5,7 @@ const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Home' },
   { to: '/community', icon: Users, label: 'Community' },
   { to: '/log-meal', icon: Plus, label: 'Log', highlight: true },
-  { to: '/nutrition-hub', icon: Apple, label: 'Foods' },
+  { to: '/nutrition-hub', icon: Apple, label: 'Nutrition' },
   { to: '/profile', icon: User, label: 'Profile' },
 ];
 
