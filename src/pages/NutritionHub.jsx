@@ -10,6 +10,7 @@ const CATEGORIES = [
   { key: 'simple_carbs', label: 'Simple Carbs', desc: 'Fast-digesting energy' },
   { key: 'complex_carbs', label: 'Complex Carbs', desc: 'Slow-burning fuel' },
   { key: 'fiber', label: 'Fiber-Rich', desc: 'Digestive health' },
+  { key: 'supplements', label: 'Supplements', desc: 'Natural performance boosters' },
   { key: 'recipes', label: 'Recipes', desc: 'Community creations' },
 ];
 
