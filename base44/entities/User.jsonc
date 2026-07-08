@@ -1,0 +1,78 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "age": {
+      "type": "number"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female"
+      ]
+    },
+    "weight_lbs": {
+      "type": "number"
+    },
+    "height_in": {
+      "type": "number"
+    },
+    "activity_level": {
+      "type": "string",
+      "enum": [
+        "sedentary",
+        "light",
+        "moderate",
+        "very",
+        "extreme"
+      ]
+    },
+    "body_fat_pct": {
+      "type": "number"
+    },
+    "goal_type": {
+      "type": "string",
+      "enum": [
+        "deficit_moderate",
+        "deficit_aggressive",
+        "surplus"
+      ]
+    },
+    "calorie_target": {
+      "type": "number"
+    },
+    "protein_target": {
+      "type": "number"
+    },
+    "fat_target": {
+      "type": "number"
+    },
+    "carb_target": {
+      "type": "number"
+    },
+    "simple_carb_target": {
+      "type": "number"
+    },
+    "tdee": {
+      "type": "number"
+    },
+    "bmr": {
+      "type": "number"
+    },
+    "is_private": {
+      "type": "boolean",
+      "default": false
+    },
+    "bio": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "has_onboarded": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

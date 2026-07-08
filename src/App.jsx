@@ -6,6 +6,16 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
+import Layout from '@/components/Layout';
+import Onboarding from '@/pages/Onboarding';
+import Dashboard from '@/pages/Dashboard';
+import LogMeal from '@/pages/LogMeal';
+import Community from '@/pages/Community';
+import NutritionHub from '@/pages/NutritionHub';
+import NutritionItemDetail from '@/pages/NutritionItemDetail';
+import Profile from '@/pages/Profile';
+import SubmitRecipe from '@/pages/SubmitRecipe';
+import AdminPanel from '@/pages/AdminPanel';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -34,7 +44,18 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
+      <Route path="/onboarding" element={<Onboarding />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/log-meal" element={<LogMeal />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/nutrition-hub" element={<NutritionHub />} />
+        <Route path="/nutrition-hub/:id" element={<NutritionItemDetail />} />
+        <Route path="/submit-recipe" element={<SubmitRecipe />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/admin" element={<AdminPanel />} />
+      </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

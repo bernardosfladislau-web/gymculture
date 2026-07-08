@@ -1,0 +1,25 @@
+{
+  "name": "Follow",
+  "type": "object",
+  "properties": {
+    "following_id": {
+      "type": "string"
+    },
+    "following_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "following_id",
+    "status"
+  ]
+}

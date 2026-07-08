@@ -1,0 +1,37 @@
+{
+  "name": "Report",
+  "type": "object",
+  "properties": {
+    "item_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "comment",
+        "user"
+      ]
+    },
+    "item_id": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "resolved",
+        "dismissed"
+      ],
+      "default": "pending"
+    },
+    "reporter_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "item_type",
+    "item_id",
+    "reason"
+  ]
+}

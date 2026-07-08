@@ -1,0 +1,61 @@
+{
+  "name": "NutritionItem",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "protein",
+        "fats",
+        "simple_carbs",
+        "complex_carbs",
+        "fiber",
+        "recipes"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "photo_url": {
+      "type": "string"
+    },
+    "calories": {
+      "type": "number"
+    },
+    "protein": {
+      "type": "number"
+    },
+    "fat": {
+      "type": "number"
+    },
+    "carbs": {
+      "type": "number"
+    },
+    "fiber": {
+      "type": "number"
+    },
+    "description": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "submitter_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "pending",
+        "rejected"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "category",
+    "name",
+    "status"
+  ]
+}
