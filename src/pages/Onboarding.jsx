@@ -50,7 +50,12 @@ export default function Onboarding() {
         height_in: Number(form.height_in),
         body_fat_pct: form.body_fat_pct ? Number(form.body_fat_pct) : undefined,
         has_onboarded: true,
-        ...results,
+        bmr: results.bmr,
+        tdee: results.tdee,
+        calorie_target: results.calorieTarget,
+        protein_target: results.proteinTarget,
+        fat_target: results.fatTarget,
+        carb_target: results.carbTarget,
       });
       navigate('/');
     } finally {
