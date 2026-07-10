@@ -73,9 +73,9 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center justify-around mt-6 pt-6 border-t border-border/40">
-          <MacroRing consumed={totals.protein} target={user?.protein_target || 0} label="Protein" color="hsl(0 70% 55%)" size={72} />
-          <MacroRing consumed={totals.fat} target={user?.fat_target || 0} label="Fat" color="hsl(45 80% 55%)" size={72} />
-          <MacroRing consumed={totals.carbs} target={user?.carb_target || 0} label="Carbs" color="hsl(210 70% 55%)" size={72} />
+          <MacroRing consumed={totals.protein} target={user?.protein_target || 0} label="Protein" sublabel={`/${user?.protein_target || 0}g`} color="hsl(0 70% 55%)" size={72} />
+          <MacroRing consumed={totals.fat} target={user?.fat_target || 0} label="Fat" sublabel={`/${user?.fat_target || 0}g`} color="hsl(45 80% 55%)" size={72} />
+          <MacroRing consumed={totals.carbs} target={user?.carb_target || 0} label="Carbs" sublabel={`/${user?.carb_target || 0}g`} color="hsl(210 70% 55%)" size={72} />
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Heart, MessageCircle, Share2, Trash2, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { getRelativeTime } from '@/lib/relativeTime';
 
 export default function PostCard({ post, currentUserId, onDelete }) {
   const [liked, setLiked] = useState(false);
@@ -45,7 +45,10 @@ export default function PostCard({ post, currentUserId, onDelete }) {
             <User size={16} className="text-muted-foreground" />
           </div>
         )}
-        <span className="text-sm font-medium">{post.author_name || 'Unknown'}</span>
+        <div className="flex-1 min-w-0">
+          <span className="text-sm font-medium">{post.author_name || 'Unknown'}</span>
+          <span className="text-[11px] text-muted-foreground ml-2">{getRelativeTime(post.created_date)}</span>
+        </div>
         {post.created_by_id === currentUserId && onDelete && (
           <button onClick={handleDelete} className="ml-auto text-muted-foreground hover:text-destructive transition-colors p-1">
             <Trash2 size={16} />

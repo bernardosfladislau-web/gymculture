@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { getRelativeTime } from '@/lib/relativeTime';
 
 export default function CommentSection({ postId, currentUserId, currentUser }) {
   const [comments, setComments] = useState([]);
@@ -49,6 +50,7 @@ export default function CommentSection({ postId, currentUserId, currentUser }) {
               <span className="text-xs font-medium mr-2">{c.author_name || 'Unknown'}</span>
               <span className="text-xs text-foreground/90">{c.content}</span>
             </div>
+            <span className="text-[10px] text-muted-foreground ml-2 mt-0.5 inline-block">{getRelativeTime(c.created_date)}</span>
             {c.created_by_id === currentUserId && (
               <button onClick={() => handleDelete(c)} className="text-[10px] text-muted-foreground hover:text-destructive ml-2 mt-0.5">
                 Delete

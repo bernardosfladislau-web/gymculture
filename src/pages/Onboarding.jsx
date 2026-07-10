@@ -179,6 +179,11 @@ export default function Onboarding() {
               <ChevronLeft size={18} />
             </Button>
           )}
+          {step === 5 && (
+            <Button variant="ghost" onClick={() => setStep(4)} className="px-4">
+              <ChevronLeft size={18} /> Edit
+            </Button>
+          )}
           {step < 4 && (
             <Button onClick={() => setStep(step + 1)} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
               Continue <ChevronRight size={18} />
