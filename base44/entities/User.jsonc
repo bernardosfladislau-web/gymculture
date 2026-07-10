@@ -36,6 +36,7 @@
       "enum": [
         "deficit_moderate",
         "deficit_aggressive",
+        "maintain",
         "surplus"
       ]
     },
