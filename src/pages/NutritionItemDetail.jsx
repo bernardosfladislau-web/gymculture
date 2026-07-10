@@ -8,6 +8,7 @@ export default function NutritionItemDetail() {
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     base44.entities.NutritionItem.get(id)
@@ -43,9 +44,9 @@ export default function NutritionItemDetail() {
 
   return (
     <div className="min-h-screen">
-      {item.photo_url && (
+      {item.photo_url && !imgError && (
         <div className="relative h-72 -mx-0 -mt-0">
-          <img src={item.photo_url} alt={item.name} className="w-full h-full object-cover" />
+          <img src={item.photo_url} alt={item.name} className="w-full h-full object-cover" onError={() => setImgError(true)} />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
           <button onClick={() => navigate('/nutrition-hub')} className="absolute top-12 left-5 w-9 h-9 rounded-full glass-card flex items-center justify-center">
             <ChevronLeft size={18} />
@@ -53,8 +54,8 @@ export default function NutritionItemDetail() {
         </div>
       )}
 
-      <div className={`px-5 ${item.photo_url ? '-mt-12 relative' : 'pt-12'}`}>
-        {!item.photo_url && (
+      <div className={`px-5 ${item.photo_url && !imgError ? '-mt-12 relative' : 'pt-12'}`}>
+        {(!item.photo_url || imgError) && (
           <button onClick={() => navigate('/nutrition-hub')} className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
             <ChevronLeft size={16} /> Back
           </button>

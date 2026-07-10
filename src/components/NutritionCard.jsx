@@ -1,14 +1,17 @@
+import { useState } from 'react';
 import { Flame, Beef, Droplet, Wheat } from 'lucide-react';
 
 export default function NutritionCard({ item, onClick }) {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <button
       onClick={onClick}
       className="flex-shrink-0 w-44 glass-card rounded-2xl overflow-hidden text-left active:scale-95 transition-transform"
     >
       <div className="relative h-32">
-        {item.photo_url ? (
-          <img src={item.photo_url} alt={item.name} className="w-full h-full object-cover" />
+        {item.photo_url && !imgError ? (
+          <img src={item.photo_url} alt={item.name} className="w-full h-full object-cover" onError={() => setImgError(true)} />
         ) : (
           <div className="w-full h-full bg-secondary flex items-center justify-center">
             <Wheat size={32} className="text-muted-foreground" />

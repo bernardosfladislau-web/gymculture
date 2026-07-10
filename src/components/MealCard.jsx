@@ -1,11 +1,17 @@
+import { useState } from 'react';
 import { Flame, Beef, Droplet, Wheat, Trash2 } from 'lucide-react';
 
 export default function MealCard({ meal, onDelete }) {
+  const [imgError, setImgError] = useState(false);
   return (
     <div className="glass-card rounded-2xl p-4 animate-fade-in">
       <div className="flex items-start gap-3">
-        {meal.photo_url && (
-          <img src={meal.photo_url} alt={meal.food_name} className="w-14 h-14 rounded-xl object-cover" />
+        {meal.photo_url && !imgError ? (
+          <img src={meal.photo_url} alt={meal.food_name} className="w-14 h-14 rounded-xl object-cover" onError={() => setImgError(true)} />
+        ) : (
+          <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
+            <Flame size={20} className="text-muted-foreground" />
+          </div>
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">

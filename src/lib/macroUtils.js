@@ -7,8 +7,9 @@ export const ACTIVITY_LEVELS = {
 };
 
 export const GOAL_TYPES = {
-  deficit_moderate: { label: 'Moderate Deficit', adjustment: -300, description: '300 cal below maintenance' },
   deficit_aggressive: { label: 'Aggressive Deficit', adjustment: -500, description: '500 cal below maintenance — experienced lifters only' },
+  deficit_moderate: { label: 'Moderate Deficit', adjustment: -300, description: '300 cal below maintenance' },
+  maintain: { label: 'Maintain Weight', adjustment: 0, description: 'Eat at maintenance to keep your current weight' },
   surplus: { label: 'Surplus', adjustment: 250, description: '200-300 cal above maintenance' },
 };
 
@@ -28,14 +29,13 @@ export function calculateBMR(weightLbs, heightIn, age, gender, bodyFatPct) {
 export function calculateMacros(weightLbs, tdee, goalAdjustment) {
   const calorieTarget = Math.max(1200, tdee + goalAdjustment);
   const proteinTarget = Math.round(weightLbs * 1);
-  const fatTarget = Math.round(weightLbs * 0.4);
+  const fatCalories = Math.round(calorieTarget * 0.25);
+  const fatTarget = Math.round(fatCalories / 9);
   const proteinCalories = proteinTarget * 4;
-  const fatCalories = fatTarget * 9;
   const remainingCalories = calorieTarget - proteinCalories - fatCalories;
   const carbTarget = Math.max(0, Math.round(remainingCalories / 4));
-  const simpleCarbTarget = Math.min(100, Math.max(50, Math.round(carbTarget * 0.3)));
 
-  return { calorieTarget, proteinTarget, fatTarget, carbTarget, simpleCarbTarget };
+  return { calorieTarget, proteinTarget, fatTarget, carbTarget };
 }
 
 export function calculateAllMetrics({ age, weightLbs, heightIn, gender, activityLevel, bodyFatPct, goalType }) {

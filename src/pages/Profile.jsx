@@ -15,6 +15,7 @@ export default function Profile() {
   const [editMode, setEditMode] = useState(false);
   const [bio, setBio] = useState('');
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const fileRef = useRef(null);
 
   const isOwnProfile = !id || id === currentUser?.id;
@@ -77,7 +78,7 @@ export default function Profile() {
 
   const handleLogout = async () => {
     try {
-      await base44.auth.logout('/');
+      await base44.auth.logout('/login');
     } catch {
       window.location.href = '/login';
     }
@@ -105,11 +106,20 @@ export default function Profile() {
     <div className="px-5 pt-12 pb-4">
       <div className="flex items-start gap-4 mb-6 animate-fade-in">
         <div className="relative">
-          <img
-            src={profileUser.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profileUser.full_name || 'User')}&background=3D1F6E&color=E8E0F5&size=128`}
-            alt={profileUser.full_name}
-            className="w-20 h-20 rounded-full object-cover border-2 border-primary/30"
-          />
+          {profileUser.avatar_url && !avatarError ? (
+            <img
+              src={profileUser.avatar_url}
+              alt={profileUser.full_name}
+              className="w-20 h-20 rounded-full object-cover border-2 border-primary/30"
+              onError={() => setAvatarError(true)}
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center border-2 border-primary/30">
+              <span className="text-2xl font-heading font-light text-primary">
+                {(profileUser.full_name || 'U')[0].toUpperCase()}
+              </span>
+            </div>
+          )}
           {isOwnProfile && (
             <>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleAvatarUpload(e.target.files[0])} />

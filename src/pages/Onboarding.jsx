@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, ChevronLeft, Flame, Beef, Droplet, Wheat, AlertTriangle } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Flame, Beef, Droplet, Wheat } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { ACTIVITY_LEVELS, GOAL_TYPES, calculateAllMetrics } from '@/lib/macroUtils';
@@ -140,8 +140,8 @@ export default function Onboarding() {
                 <span className="text-sm font-medium block">{val.label}</span>
                 <span className="text-xs text-muted-foreground">{val.description}</span>
                 {key === 'deficit_aggressive' && (
-                  <span className="flex items-center gap-1 mt-2 text-xs text-amber-500">
-                    <AlertTriangle size={12} /> Recommended for experienced lifters only
+                  <span className="block mt-2 text-xs text-amber-500">
+                    Recommended for experienced lifters only
                   </span>
                 )}
               </button>
@@ -157,12 +157,11 @@ export default function Onboarding() {
               <p className="text-5xl font-heading font-light text-primary">{results.calorieTarget}</p>
               <p className="text-xs text-muted-foreground mt-1">Maintenance: {results.tdee} cal</p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               {[
                 { label: 'Protein', val: results.proteinTarget, unit: 'g', icon: Beef, color: 'text-red-400' },
                 { label: 'Fat', val: results.fatTarget, unit: 'g', icon: Droplet, color: 'text-yellow-400' },
                 { label: 'Carbs', val: results.carbTarget, unit: 'g', icon: Wheat, color: 'text-blue-400' },
-                { label: 'Simple Carbs', val: results.simpleCarbTarget, unit: 'g', icon: Flame, color: 'text-primary' },
               ].map((m) => (
                 <div key={m.label} className="glass-card rounded-2xl p-4">
                   <m.icon size={18} className={m.color} />

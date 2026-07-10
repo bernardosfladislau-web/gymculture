@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, MessageCircle, Share2, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Trash2, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 
@@ -7,6 +7,8 @@ export default function PostCard({ post, currentUserId, onDelete }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.like_count || 0);
   const [showComments, setShowComments] = useState(false);
+  const [imgError, setImgError] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   const handleLike = async () => {
     if (!currentUserId) return;
@@ -31,11 +33,18 @@ export default function PostCard({ post, currentUserId, onDelete }) {
   return (
     <div className="glass-card rounded-2xl overflow-hidden animate-fade-in">
       <div className="flex items-center gap-3 p-4">
-        <img
-          src={post.author_avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author_name || 'User')}&background=3D1F6E&color=E8E0F5`}
-          alt={post.author_name}
-          className="w-9 h-9 rounded-full object-cover"
-        />
+        {post.author_avatar_url && !avatarError ? (
+          <img
+            src={post.author_avatar_url}
+            alt={post.author_name}
+            className="w-9 h-9 rounded-full object-cover"
+            onError={() => setAvatarError(true)}
+          />
+        ) : (
+          <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
+            <User size={16} className="text-muted-foreground" />
+          </div>
+        )}
         <span className="text-sm font-medium">{post.author_name || 'Unknown'}</span>
         {post.created_by_id === currentUserId && onDelete && (
           <button onClick={handleDelete} className="ml-auto text-muted-foreground hover:text-destructive transition-colors p-1">
@@ -44,8 +53,8 @@ export default function PostCard({ post, currentUserId, onDelete }) {
         )}
       </div>
 
-      {post.post_type !== 'text' && post.photo_url && (
-        <img src={post.photo_url} alt="post" className="w-full aspect-square object-cover" />
+      {post.post_type !== 'text' && post.photo_url && !imgError && (
+        <img src={post.photo_url} alt="post" className="w-full aspect-square object-cover" onError={() => setImgError(true)} />
       )}
 
       <div className="p-4">
