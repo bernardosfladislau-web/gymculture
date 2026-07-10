@@ -55,6 +55,9 @@
     "simple_carb_target": {
       "type": "number"
     },
+    "water_target_ml": {
+      "type": "number"
+    },
     "tdee": {
       "type": "number"
     },

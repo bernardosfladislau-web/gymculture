@@ -1,7 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Flame, Beef, Droplet, Wheat } from 'lucide-react';
+import MicronutrientBreakdown from '@/components/MicronutrientBreakdown';
 
-export default function DailyStatsSheet({ open, onOpenChange, totals, targets, dateLabel }) {
+export default function DailyStatsSheet({ open, onOpenChange, totals, targets, dateLabel, meals, gender, selectedDate }) {
   const macros = [
     { label: 'Calories', consumed: totals.calories, target: targets.calories, unit: '', icon: Flame, color: 'text-primary', bar: 'bg-primary' },
     { label: 'Protein', consumed: totals.protein, target: targets.protein, unit: 'g', icon: Beef, color: 'text-red-400', bar: 'bg-red-400' },
@@ -11,7 +12,7 @@ export default function DailyStatsSheet({ open, onOpenChange, totals, targets, d
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border/50 max-w-md rounded-3xl">
+      <DialogContent className="border-border/50 max-w-md rounded-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-heading font-light text-gradient-gold">
             {dateLabel || 'Today'} Progress
@@ -41,6 +42,11 @@ export default function DailyStatsSheet({ open, onOpenChange, totals, targets, d
               </div>
             );
           })}
+        </div>
+
+        <div className="border-t border-border/40 pt-4 mt-2">
+          <h3 className="text-sm font-heading font-light text-gradient-violet mb-3">Micronutrients</h3>
+          <MicronutrientBreakdown meals={meals} gender={gender} selectedDate={selectedDate} />
         </div>
       </DialogContent>
     </Dialog>

@@ -1,0 +1,17 @@
+{
+  "name": "WaterLog",
+  "type": "object",
+  "properties": {
+    "log_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "amount_ml": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "log_date",
+    "amount_ml"
+  ]
+}

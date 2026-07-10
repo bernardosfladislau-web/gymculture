@@ -7,10 +7,11 @@ import { calculateAllMetrics } from '@/lib/macroUtils';
 import MacroRing from '@/components/MacroRing';
 import MealCard from '@/components/MealCard';
 import DailyStatsSheet from '@/components/DailyStatsSheet';
+import WaterTracker from '@/components/WaterTracker';
 import CalendarProgress from '@/components/CalendarProgress';
 
 export default function Dashboard() {
-  const { user } = useCurrentUser();
+  const { user, updateUser } = useCurrentUser();
   const [allMeals, setAllMeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -123,6 +124,8 @@ export default function Dashboard() {
         </div>
       </button>
 
+      <WaterTracker selectedDate={selectedDate} user={user} updateUser={updateUser} />
+
       <div className="mb-6">
         <CalendarProgress
           mealsByDate={mealsByDate}
@@ -168,6 +171,9 @@ export default function Dashboard() {
         totals={totals}
         targets={targets}
         dateLabel={dateLabel}
+        meals={dayMeals}
+        gender={user?.gender}
+        selectedDate={selectedDate}
       />
     </div>
   );
