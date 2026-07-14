@@ -6,6 +6,8 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
+import { LanguageProvider } from '@/lib/LanguageContext';
+import LanguageSelect from '@/pages/LanguageSelect';
 import Layout from '@/components/Layout';
 import Onboarding from '@/pages/Onboarding';
 import Dashboard from '@/pages/Dashboard';
@@ -20,6 +22,10 @@ import AdminPanel from '@/pages/AdminPanel';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+
+  if (!localStorage.getItem('app_language')) {
+    return <LanguageSelect />;
+  }
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -66,13 +72,15 @@ function App() {
 
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
+      <LanguageProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router>
           <ScrollToTop />
           <AuthenticatedApp />
         </Router>
         <Toaster />
-      </QueryClientProvider>
+        </QueryClientProvider>
+      </LanguageProvider>
     </AuthProvider>
   )
 }

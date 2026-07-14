@@ -2,13 +2,24 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Flame, Beef, Droplet, Wheat } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { useLanguage } from '@/lib/LanguageContext';
+
+const CATEGORY_LABELS = {
+  protein: 'nutri.proteins',
+  fats: 'nutri.good_fats',
+  simple_carbs: 'nutri.simple_carbs',
+  complex_carbs: 'nutri.complex_carbs',
+  fiber: 'nutri.fiber',
+  supplements: 'nutri.supplements',
+  recipes: 'nutri.recipes',
+};
 
 export default function NutritionItemDetail() {
+  const { t } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     base44.entities.NutritionItem.get(id)
@@ -28,9 +39,9 @@ export default function NutritionItemDetail() {
     return (
       <div className="px-5 pt-12">
         <button onClick={() => navigate('/nutrition-hub')} className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
-          <ChevronLeft size={16} /> Back
+          <ChevronLeft size={16} /> {t('common.back')}
         </button>
-        <p className="text-sm text-muted-foreground">Item not found.</p>
+        <p className="text-sm text-muted-foreground">{t('nutri.not_found')}</p>
       </div>
     );
   }
@@ -43,27 +54,47 @@ export default function NutritionItemDetail() {
   ];
 
   return (
-    <div className="min-h-screen">
-      {item.photo_url && !imgError && (
-        <div className="relative h-72 -mx-0 -mt-0">
-          <img src={item.photo_url} alt={item.name} className="w-full h-full object-cover" onError={() => setImgError(true)} />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-          <button onClick={() => navigate('/nutrition-hub')} className="absolute top-12 left-5 w-9 h-9 rounded-full glass-card flex items-center justify-center">
-            <ChevronLeft size={18} />
-          </button>
+    <div className="px-5 pt-12">
+      <button onClick={() => navigate('/nutrition-hub')} className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
+        <ChevronLeft size={16} /> {t('common.back')}
+      </button>
+
+      <p className="text-xs text-primary tracking-wide uppercase mb-1">{t(CATEGORY_LABELS[item.category] || item.category)}</p>
+      <h1 className="text-3xl font-heading font-light mb-4">{item.name}</h1>
+
+      {item.diet_tags?.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-5">
+          {item.diet_tags.map((tag) => (
+            <span key={tag} className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary capitalize">
+              {t(`nutri.${tag}`)}
+            </span>
+          ))}
         </div>
       )}
 
-      <div className={`px-5 ${item.photo_url && !imgError ? '-mt-12 relative' : 'pt-12'}`}>
-        {(!item.photo_url || imgError) && (
-          <button onClick={() => navigate('/nutrition-hub')} className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
-            <ChevronLeft size={16} /> Back
-          </button>
-        )}
-        <p className="text-xs text-primary tracking-wide uppercase mb-1">{item.category.replace('_', ' ')}</p>
-        <h1 className="text-3xl font-heading font-light mb-4">{item.name}</h1>
+      {item.benefits && (
+        <div className="glass-card rounded-2xl p-4 mb-3">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">{t('nutri.benefits')}</h3>
+          <p className="text-sm text-foreground/90 leading-relaxed">{item.benefits}</p>
+        </div>
+      )}
 
-        <div className="grid grid-cols-4 gap-2 mb-6">
+      {item.where_to_buy && (
+        <div className="glass-card rounded-2xl p-4 mb-3">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">{t('nutri.where_to_buy')}</h3>
+          <p className="text-sm text-foreground/90">{item.where_to_buy}</p>
+        </div>
+      )}
+
+      {item.recommended_brands && (
+        <div className="glass-card rounded-2xl p-4 mb-3">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">{t('nutri.recommended_brands')}</h3>
+          <p className="text-sm text-foreground/90 leading-relaxed">{item.recommended_brands}</p>
+        </div>
+      )}
+
+      {item.calories != null && (
+        <div className="grid grid-cols-4 gap-2 mt-4">
           {macros.map((m) => (
             <div key={m.label} className="glass-card rounded-2xl p-3 text-center">
               <m.icon size={18} className={`${m.color} mx-auto`} />
@@ -72,28 +103,7 @@ export default function NutritionItemDetail() {
             </div>
           ))}
         </div>
-
-        {item.fiber != null && (
-          <div className="glass-card rounded-2xl p-4 mb-4 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Fiber</span>
-            <span className="text-sm font-medium">{item.fiber}g</span>
-          </div>
-        )}
-
-        {item.description && (
-          <div className="mb-4">
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Description</h3>
-            <p className="text-sm text-foreground/90 leading-relaxed">{item.description}</p>
-          </div>
-        )}
-
-        {item.source && (
-          <p className="text-xs text-muted-foreground">Source: {item.source}</p>
-        )}
-        {item.submitter_name && (
-          <p className="text-xs text-muted-foreground mt-1">Suggested by {item.submitter_name}</p>
-        )}
-      </div>
+      )}
     </div>
   );
 }

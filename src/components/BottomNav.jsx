@@ -1,16 +1,18 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Plus, Users, Apple, User } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Home' },
-  { to: '/community', icon: Users, label: 'Community' },
-  { to: '/log-meal', icon: Plus, label: 'Log', highlight: true },
-  { to: '/nutrition-hub', icon: Apple, label: 'Nutrition' },
-  { to: '/profile', icon: User, label: 'Profile' },
+  { to: '/', icon: LayoutDashboard, labelKey: 'nav.home' },
+  { to: '/community', icon: Users, labelKey: 'nav.community' },
+  { to: '/log-meal', icon: Plus, labelKey: 'nav.log', highlight: true },
+  { to: '/nutrition-hub', icon: Apple, labelKey: 'nav.nutrition' },
+  { to: '/profile', icon: User, labelKey: 'nav.profile' },
 ];
 
 export default function BottomNav() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
@@ -42,7 +44,7 @@ export default function BottomNav() {
                 }
               >
                 <Icon size={22} strokeWidth={2} />
-                <span className="text-[10px] font-medium tracking-wide">{item.label}</span>
+                <span className="text-[10px] font-medium tracking-wide">{t(item.labelKey)}</span>
               </NavLink>
             );
           })}

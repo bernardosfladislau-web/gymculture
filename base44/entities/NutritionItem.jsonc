@@ -38,6 +38,31 @@
     "description": {
       "type": "string"
     },
+    "diet_tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "vegan",
+          "vegetarian",
+          "keto",
+          "carnivore",
+          "paleo",
+          "mediterranean",
+          "gluten_free",
+          "dairy_free"
+        ]
+      }
+    },
+    "where_to_buy": {
+      "type": "string"
+    },
+    "benefits": {
+      "type": "string"
+    },
+    "recommended_brands": {
+      "type": "string"
+    },
     "source": {
       "type": "string"
     },

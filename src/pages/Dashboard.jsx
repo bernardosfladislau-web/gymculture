@@ -9,9 +9,11 @@ import MealCard from '@/components/MealCard';
 import DailyStatsSheet from '@/components/DailyStatsSheet';
 import WaterTracker from '@/components/WaterTracker';
 import CalendarProgress from '@/components/CalendarProgress';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function Dashboard() {
   const { user, updateUser } = useCurrentUser();
+  const { t } = useLanguage();
   const [allMeals, setAllMeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -85,7 +87,7 @@ export default function Dashboard() {
   };
 
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const greeting = hour < 12 ? t('dash.good_morning') : hour < 18 ? t('dash.good_afternoon') : t('dash.good_evening');
   const isToday = selectedDate === new Date().toISOString().split('T')[0];
   const dateLabel = isToday ? 'Today' : new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
