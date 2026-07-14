@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Plus, Loader2, X, Camera } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useLanguage } from '@/lib/LanguageContext';
 import PostCard from '@/components/PostCard';
 import CommentSection from '@/components/CommentSection';
 import { Button } from '@/components/ui/button';
 
 export default function Community() {
+  const { t } = useLanguage();
   const { user } = useCurrentUser();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function Community() {
   return (
     <div className="px-5 pt-12">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-heading font-light">Community</h1>
+        <h1 className="text-2xl font-heading font-light">{t('comm.title')}</h1>
         <button onClick={() => setShowCreate(true)} className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center glow-gold active:scale-95 transition-transform">
           <Plus size={20} />
         </button>
@@ -39,7 +41,7 @@ export default function Community() {
         </div>
       ) : posts.length === 0 ? (
         <div className="glass-card rounded-2xl p-8 text-center">
-          <p className="text-sm text-muted-foreground">No posts yet. Be the first to share!</p>
+          <p className="text-sm text-muted-foreground">{t('comm.no_posts')}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -53,7 +55,7 @@ export default function Community() {
               )}
               {expandedComments !== post.id && (
                 <button onClick={() => setExpandedComments(post.id)} className="text-xs text-primary px-4 pt-1">
-                  View comments
+                  {t('comm.view_comments')}
                 </button>
               )}
             </div>
@@ -67,6 +69,7 @@ export default function Community() {
 }
 
 function CreatePostModal({ user, onClose, onPosted }) {
+  const { t } = useLanguage();
   const [text, setText] = useState('');
   const [photoUrl, setPhotoUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -105,12 +108,12 @@ function CreatePostModal({ user, onClose, onPosted }) {
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end sm:items-center justify-center" onClick={onClose}>
       <div className="glass-card rounded-t-3xl sm:rounded-3xl w-full max-w-md p-6 animate-fade-in" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-heading font-light">New Post</h2>
+          <h2 className="text-lg font-heading font-light">{t('comm.new_post')}</h2>
           <button onClick={onClose}><X size={20} className="text-muted-foreground" /></button>
         </div>
-        <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Share your journey..."
+        <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t('comm.share')}
           rows={3} className="w-full glass-card rounded-2xl px-4 py-3 bg-transparent outline-none focus:border-primary/50 border border-border/50 text-sm resize-none" />
-        {photoUrl && <img src={photoUrl} alt="preview" className="w-full h-48 object-cover rounded-2xl mt-3" />}
+        {photoUrl && <img src={photoUrl} alt="preview" className="w-full max-h-64 object-contain rounded-2xl mt-3" />}
         <div className="flex items-center gap-3 mt-4">
           <label className="cursor-pointer">
             <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0])} />
@@ -119,7 +122,7 @@ function CreatePostModal({ user, onClose, onPosted }) {
             </div>
           </label>
           <Button onClick={handlePost} disabled={posting || (!text.trim() && !photoUrl)} className="flex-1 bg-primary text-primary-foreground">
-            {posting ? <Loader2 size={18} className="animate-spin" /> : 'Post'}
+            {posting ? <Loader2 size={18} className="animate-spin" /> : t('comm.post')}
           </Button>
         </div>
       </div>

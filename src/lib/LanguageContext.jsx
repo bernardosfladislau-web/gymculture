@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { translations, LANGUAGES } from '@/lib/i18n/translations';
+import { extraTranslations } from '@/lib/i18n/extra-translations';
 
 const LanguageContext = createContext();
 
@@ -21,7 +22,7 @@ export function LanguageProvider({ children }) {
   }, []);
 
   const t = useCallback(
-    (key) => translations[lang]?.[key] || translations.en[key] || key,
+    (key) => extraTranslations[lang]?.[key] || translations[lang]?.[key] || extraTranslations.en?.[key] || translations.en[key] || key,
     [lang]
   );
 

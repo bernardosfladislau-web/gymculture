@@ -47,10 +47,10 @@ export default function NutritionItemDetail() {
   }
 
   const macros = [
-    { label: 'Calories', val: item.calories, unit: 'cal', icon: Flame, color: 'text-primary' },
-    { label: 'Protein', val: item.protein, unit: 'g', icon: Beef, color: 'text-red-400' },
-    { label: 'Fat', val: item.fat, unit: 'g', icon: Droplet, color: 'text-yellow-400' },
-    { label: 'Carbs', val: item.carbs, unit: 'g', icon: Wheat, color: 'text-blue-400' },
+    { label: t('dash.calories'), val: item.calories, unit: 'cal', icon: Flame, color: 'text-primary' },
+    { label: t('dash.protein'), val: item.protein, unit: 'g', icon: Beef, color: 'text-red-400' },
+    { label: t('dash.fat'), val: item.fat, unit: 'g', icon: Droplet, color: 'text-yellow-400' },
+    { label: t('dash.carbs'), val: item.carbs, unit: 'g', icon: Wheat, color: 'text-blue-400' },
   ];
 
   return (

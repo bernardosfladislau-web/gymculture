@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Heart, MessageCircle, Share2, Trash2, User } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getRelativeTime } from '@/lib/relativeTime';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function PostCard({ post, currentUserId, onDelete }) {
+  const { t } = useLanguage();
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.like_count || 0);
   const [showComments, setShowComments] = useState(false);
@@ -46,7 +48,7 @@ export default function PostCard({ post, currentUserId, onDelete }) {
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <span className="text-sm font-medium">{post.author_name || 'Unknown'}</span>
+          <span className="text-sm font-medium">{post.author_name || t('comm.unknown')}</span>
           <span className="text-[11px] text-muted-foreground ml-2">{getRelativeTime(post.created_date)}</span>
         </div>
         {post.created_by_id === currentUserId && onDelete && (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, ChevronLeft, Flame, Beef, Droplet, Wheat } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { updateUser } = useCurrentUser();
+  const { user, updateUser } = useCurrentUser();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -21,6 +21,20 @@ export default function Onboarding() {
     goal_type: 'deficit_moderate',
   });
   const [results, setResults] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      setForm({
+        gender: user.gender || 'male',
+        age: user.age || 25,
+        weight_lbs: user.weight_lbs || 170,
+        height_in: user.height_in || 69,
+        activity_level: user.activity_level || 'moderate',
+        body_fat_pct: user.body_fat_pct || '',
+        goal_type: user.goal_type || 'deficit_moderate',
+      });
+    }
+  }, [user]);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 

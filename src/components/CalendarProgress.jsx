@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
 
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const LOCALE_MAP = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', de: 'de-DE', pt: 'pt-BR', it: 'it-IT', zh: 'zh-CN', ja: 'ja-JP', ar: 'ar-SA', hi: 'hi-IN' };
 
 export default function CalendarProgress({ mealsByDate, selectedDate, onSelectDate, calorieTarget }) {
+  const { lang } = useLanguage();
   const today = new Date().toISOString().split('T')[0];
   const [viewDate, setViewDate] = useState(new Date(selectedDate + 'T00:00:00'));
 
@@ -11,7 +14,7 @@ export default function CalendarProgress({ mealsByDate, selectedDate, onSelectDa
   const month = viewDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const monthLabel = viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const monthLabel = viewDate.toLocaleDateString(LOCALE_MAP[lang] || 'en-US', { month: 'long', year: 'numeric' });
 
   const cells = [];
   for (let i = 0; i < firstDay; i++) cells.push(null);

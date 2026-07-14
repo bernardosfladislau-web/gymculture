@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Droplets, Plus, Undo2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import MacroRing from '@/components/MacroRing';
+import { useLanguage } from '@/lib/LanguageContext';
 
 const QUICK_AMOUNTS = [250, 500, 750];
 const ACTIVITY_MULTIPLIERS = { sedentary: 1.0, light: 1.1, moderate: 1.2, very: 1.3, extreme: 1.5 };
 
 export default function WaterTracker({ selectedDate, user, updateUser }) {
+  const { t } = useLanguage();
   const [waterLogs, setWaterLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [target, setTarget] = useState(0);
@@ -89,7 +91,7 @@ export default function WaterTracker({ selectedDate, user, updateUser }) {
         <MacroRing
           consumed={consumed}
           target={target || 2000}
-          label="Water"
+          label={t('dash.water')}
           sublabel={`/${target || 0}ml`}
           color="hsl(200 80% 55%)"
           size={80}
@@ -97,10 +99,10 @@ export default function WaterTracker({ selectedDate, user, updateUser }) {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <Droplets size={16} className="text-blue-400" />
-            <span className="text-sm font-medium">Hydration</span>
+            <span className="text-sm font-medium">{t('dash.hydration')}</span>
           </div>
           <p className="text-xs text-muted-foreground mb-3">
-            {fetchingTarget ? 'Calculating your target...' : `${consumed}ml of ${target}ml`}
+            {fetchingTarget ? t('water.calculating') || 'Calculating...' : `${consumed}ml / ${target}ml`}
           </p>
           <div className="flex items-center gap-2">
             {QUICK_AMOUNTS.map((amt) => (

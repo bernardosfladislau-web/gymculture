@@ -1,0 +1,66 @@
+import { base44 } from '@/api/base44Client';
+import { useLanguage } from '@/lib/LanguageContext';
+import { Settings as SettingsIcon, LogOut, Trash2, Globe, Target, ChevronRight } from 'lucide-react';
+
+export default function SettingsSheet({ open, onOpenChange, onNavigate }) {
+  const { t } = useLanguage();
+
+  if (!open) return null;
+
+  const handleChangeLanguage = () => {
+    localStorage.removeItem('app_language');
+    window.location.reload();
+  };
+
+  const handleChangeGoals = () => {
+    onOpenChange(false);
+    onNavigate('/onboarding');
+  };
+
+  const handleLogout = () => {
+    onOpenChange(false);
+    base44.auth.logout('/login');
+  };
+
+  const handleDeleteAccount = () => {
+    if (window.confirm(t('settings.delete_confirm'))) {
+      onOpenChange(false);
+      base44.auth.logout('/login');
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end justify-center" onClick={() => onOpenChange(false)}>
+      <div className="glass-card rounded-t-3xl w-full max-w-md p-6 animate-fade-in" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-2 mb-6">
+          <SettingsIcon size={20} className="text-primary" />
+          <h2 className="text-lg font-heading font-light">{t('settings.title')}</h2>
+        </div>
+
+        <div className="space-y-2">
+          <button onClick={handleChangeGoals} className="w-full glass-card rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform">
+            <Target size={18} className="text-primary" />
+            <span className="text-sm font-medium flex-1 text-left">{t('settings.change_goals')}</span>
+            <ChevronRight size={16} className="text-muted-foreground" />
+          </button>
+
+          <button onClick={handleChangeLanguage} className="w-full glass-card rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform">
+            <Globe size={18} className="text-primary" />
+            <span className="text-sm font-medium flex-1 text-left">{t('settings.change_language')}</span>
+            <ChevronRight size={16} className="text-muted-foreground" />
+          </button>
+
+          <button onClick={handleLogout} className="w-full glass-card rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform">
+            <LogOut size={18} className="text-destructive" />
+            <span className="text-sm font-medium flex-1 text-left text-destructive">{t('settings.logout')}</span>
+          </button>
+
+          <button onClick={handleDeleteAccount} className="w-full glass-card rounded-2xl p-4 flex items-center gap-3 active:scale-[0.98] transition-transform">
+            <Trash2 size={18} className="text-destructive" />
+            <span className="text-sm font-medium flex-1 text-left text-destructive">{t('settings.delete_account')}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -4,12 +4,12 @@ import { Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { calculateAllMetrics } from '@/lib/macroUtils';
+import { useLanguage } from '@/lib/LanguageContext';
 import MacroRing from '@/components/MacroRing';
 import MealCard from '@/components/MealCard';
 import DailyStatsSheet from '@/components/DailyStatsSheet';
 import WaterTracker from '@/components/WaterTracker';
 import CalendarProgress from '@/components/CalendarProgress';
-import { useLanguage } from '@/lib/LanguageContext';
 
 export default function Dashboard() {
   const { user, updateUser } = useCurrentUser();
@@ -89,13 +89,14 @@ export default function Dashboard() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? t('dash.good_morning') : hour < 18 ? t('dash.good_afternoon') : t('dash.good_evening');
   const isToday = selectedDate === new Date().toISOString().split('T')[0];
-  const dateLabel = isToday ? 'Today' : new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const dateLabel = isToday ? t('dash.today') : new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const mealsHeader = isToday ? t('dash.todays_meals').toUpperCase() : `${dateLabel.toUpperCase()} ${t('dash.todays_meals').replace("Today's ", '').toUpperCase()}`;
 
   return (
     <div className="px-5 pt-12">
       <div className="mb-6 animate-fade-in">
         <p className="text-xs text-muted-foreground tracking-wide">{greeting}</p>
-        <h1 className="text-2xl font-heading font-light">{user?.full_name?.split(' ')[0] || 'Athlete'}</h1>
+        <h1 className="text-2xl font-heading font-light">{user?.full_name?.split(' ')[0] || t('dash.athlete')}</h1>
       </div>
 
       <button onClick={() => setShowStats(true)} className="w-full text-left mb-6 animate-fade-in active:scale-[0.98] transition-transform">
@@ -104,7 +105,7 @@ export default function Dashboard() {
             <MacroRing
               consumed={totals.calories}
               target={targets.calories || 2000}
-              label="Calories"
+              label={t('dash.calories')}
               sublabel={`/${Math.round(targets.calories || 0)}`}
               color="hsl(43 58% 53%)"
               size={120}
@@ -112,17 +113,17 @@ export default function Dashboard() {
             <div className="space-y-3">
               <div className="text-center">
                 <p className="text-2xl font-heading font-light text-primary">{remaining.calories > 0 ? Math.round(remaining.calories) : 0}</p>
-                <p className="text-[10px] text-muted-foreground">calories left</p>
+                <p className="text-[10px] text-muted-foreground">{t('dash.calories_left')}</p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center justify-around mt-6 pt-6 border-t border-border/40">
-            <MacroRing consumed={totals.protein} target={targets.protein} label="Protein" sublabel={`/${Math.round(targets.protein)}g`} color="hsl(0 70% 55%)" size={72} />
-            <MacroRing consumed={totals.fat} target={targets.fat} label="Fat" sublabel={`/${Math.round(targets.fat)}g`} color="hsl(45 80% 55%)" size={72} />
-            <MacroRing consumed={totals.carbs} target={targets.carbs} label="Carbs" sublabel={`/${Math.round(targets.carbs)}g`} color="hsl(210 70% 55%)" size={72} />
+            <MacroRing consumed={totals.protein} target={targets.protein} label={t('dash.protein')} sublabel={`/${Math.round(targets.protein)}g`} color="hsl(0 70% 55%)" size={72} />
+            <MacroRing consumed={totals.fat} target={targets.fat} label={t('dash.fat')} sublabel={`/${Math.round(targets.fat)}g`} color="hsl(45 80% 55%)" size={72} />
+            <MacroRing consumed={totals.carbs} target={targets.carbs} label={t('dash.carbs')} sublabel={`/${Math.round(targets.carbs)}g`} color="hsl(210 70% 55%)" size={72} />
           </div>
-          <p className="text-center text-[11px] text-muted-foreground mt-4">Tap to view detailed breakdown</p>
+          <p className="text-center text-[11px] text-muted-foreground mt-4">{t('dash.tap_details')}</p>
         </div>
       </button>
 
@@ -138,10 +139,10 @@ export default function Dashboard() {
       </div>
 
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-medium text-muted-foreground tracking-wide">{dateLabel.toUpperCase()}'S MEALS</h2>
+        <h2 className="text-sm font-medium text-muted-foreground tracking-wide">{mealsHeader}</h2>
         {isToday && (
           <Link to="/log-meal" className="flex items-center gap-1 text-xs text-primary">
-            <Plus size={14} /> Log meal
+            <Plus size={14} /> {t('dash.log_meal')}
           </Link>
         )}
       </div>
@@ -152,10 +153,10 @@ export default function Dashboard() {
         </div>
       ) : dayMeals.length === 0 ? (
         <div className="glass-card rounded-2xl p-8 text-center">
-          <p className="text-sm text-muted-foreground">No meals logged on {dateLabel}.</p>
+          <p className="text-sm text-muted-foreground">{t('dash.no_meals')} {dateLabel}.</p>
           {isToday && (
             <Link to="/log-meal" className="inline-flex items-center gap-1 text-sm text-primary mt-2">
-              <Plus size={14} /> Log your first meal
+              <Plus size={14} /> {t('dash.log_first')}
             </Link>
           )}
         </div>
