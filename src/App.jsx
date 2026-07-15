@@ -6,6 +6,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
+import { TabHistoryProvider } from '@/lib/TabHistoryContext';
 import { LanguageProvider } from '@/lib/LanguageContext';
 import LanguageSelect from '@/pages/LanguageSelect';
 import Layout from '@/components/Layout';
@@ -76,7 +77,9 @@ function App() {
         <QueryClientProvider client={queryClientInstance}>
           <Router>
           <ScrollToTop />
-          <AuthenticatedApp />
+          <TabHistoryProvider>
+            <AuthenticatedApp />
+          </TabHistoryProvider>
         </Router>
         <Toaster />
         </QueryClientProvider>

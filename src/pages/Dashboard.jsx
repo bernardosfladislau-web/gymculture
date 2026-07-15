@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -10,6 +10,8 @@ import MealCard from '@/components/MealCard';
 import DailyStatsSheet from '@/components/DailyStatsSheet';
 import WaterTracker from '@/components/WaterTracker';
 import CalendarProgress from '@/components/CalendarProgress';
+import MobileHeader from '@/components/MobileHeader';
+import PullToRefresh from '@/components/PullToRefresh';
 
 export default function Dashboard() {
   const { user, updateUser } = useCurrentUser();
@@ -19,12 +21,16 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [showStats, setShowStats] = useState(false);
 
-  useEffect(() => {
+  const fetchMeals = useCallback(async () => {
     if (!user) return;
-    base44.entities.MealLog.filter({ created_by_id: user.id }, '-log_date')
-      .then(setAllMeals)
-      .finally(() => setLoading(false));
+    const meals = await base44.entities.MealLog.filter({ created_by_id: user.id }, '-log_date');
+    setAllMeals(meals);
+    setLoading(false);
   }, [user]);
+
+  useEffect(() => {
+    fetchMeals();
+  }, [fetchMeals]);
 
   let targets = {
     calories: user?.calorie_target || 0,
@@ -93,80 +99,85 @@ export default function Dashboard() {
   const mealsHeader = isToday ? t('dash.todays_meals').toUpperCase() : `${dateLabel.toUpperCase()} ${t('dash.todays_meals').replace("Today's ", '').toUpperCase()}`;
 
   return (
-    <div className="px-5 pt-12">
-      <div className="mb-6 animate-fade-in">
-        <p className="text-xs text-muted-foreground tracking-wide">{greeting}</p>
-        <h1 className="text-2xl font-heading font-light">{user?.full_name?.split(' ')[0] || t('dash.athlete')}</h1>
-      </div>
+    <>
+      <MobileHeader logo />
+      <PullToRefresh onRefresh={fetchMeals}>
+        <div className="px-5">
+          <div className="mb-6 animate-fade-in">
+            <p className="text-xs text-muted-foreground tracking-wide">{greeting}</p>
+            <h1 className="text-2xl font-heading font-light">{user?.full_name?.split(' ')[0] || t('dash.athlete')}</h1>
+          </div>
 
-      <button onClick={() => setShowStats(true)} className="w-full text-left mb-6 animate-fade-in active:scale-[0.98] transition-transform">
-        <div className="glass-card rounded-3xl p-6 glow-gold">
-          <div className="flex items-center justify-center gap-8">
-            <MacroRing
-              consumed={totals.calories}
-              target={targets.calories || 2000}
-              label={t('dash.calories')}
-              sublabel={`/${Math.round(targets.calories || 0)}`}
-              color="hsl(43 58% 53%)"
-              size={120}
-            />
-            <div className="space-y-3">
-              <div className="text-center">
-                <p className="text-2xl font-heading font-light text-primary">{remaining.calories > 0 ? Math.round(remaining.calories) : 0}</p>
-                <p className="text-[10px] text-muted-foreground">{t('dash.calories_left')}</p>
+          <button onClick={() => setShowStats(true)} className="w-full text-left mb-6 animate-fade-in active:scale-[0.98] transition-transform">
+            <div className="glass-card rounded-3xl p-6 glow-gold">
+              <div className="flex items-center justify-center gap-8">
+                <MacroRing
+                  consumed={totals.calories}
+                  target={targets.calories || 2000}
+                  label={t('dash.calories')}
+                  sublabel={`/${Math.round(targets.calories || 0)}`}
+                  color="hsl(43 58% 53%)"
+                  size={120}
+                />
+                <div className="space-y-3">
+                  <div className="text-center">
+                    <p className="text-2xl font-heading font-light text-primary">{remaining.calories > 0 ? Math.round(remaining.calories) : 0}</p>
+                    <p className="text-[10px] text-muted-foreground">{t('dash.calories_left')}</p>
+                  </div>
+                </div>
               </div>
+
+              <div className="flex items-center justify-around mt-6 pt-6 border-t border-border/40">
+                <MacroRing consumed={totals.protein} target={targets.protein} label={t('dash.protein')} sublabel={`/${Math.round(targets.protein)}g`} color="hsl(0 70% 55%)" size={72} />
+                <MacroRing consumed={totals.fat} target={targets.fat} label={t('dash.fat')} sublabel={`/${Math.round(targets.fat)}g`} color="hsl(45 80% 55%)" size={72} />
+                <MacroRing consumed={totals.carbs} target={targets.carbs} label={t('dash.carbs')} sublabel={`/${Math.round(targets.carbs)}g`} color="hsl(210 70% 55%)" size={72} />
+              </div>
+              <p className="text-center text-[11px] text-muted-foreground mt-4">{t('dash.tap_details')}</p>
             </div>
+          </button>
+
+          <WaterTracker selectedDate={selectedDate} user={user} updateUser={updateUser} />
+
+          <div className="mb-6">
+            <CalendarProgress
+              mealsByDate={mealsByDate}
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+              calorieTarget={targets.calories}
+            />
           </div>
 
-          <div className="flex items-center justify-around mt-6 pt-6 border-t border-border/40">
-            <MacroRing consumed={totals.protein} target={targets.protein} label={t('dash.protein')} sublabel={`/${Math.round(targets.protein)}g`} color="hsl(0 70% 55%)" size={72} />
-            <MacroRing consumed={totals.fat} target={targets.fat} label={t('dash.fat')} sublabel={`/${Math.round(targets.fat)}g`} color="hsl(45 80% 55%)" size={72} />
-            <MacroRing consumed={totals.carbs} target={targets.carbs} label={t('dash.carbs')} sublabel={`/${Math.round(targets.carbs)}g`} color="hsl(210 70% 55%)" size={72} />
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-medium text-muted-foreground tracking-wide">{mealsHeader}</h2>
+            {isToday && (
+              <Link to="/log-meal" className="flex items-center gap-1 text-xs text-primary">
+                <Plus size={14} /> {t('dash.log_meal')}
+              </Link>
+            )}
           </div>
-          <p className="text-center text-[11px] text-muted-foreground mt-4">{t('dash.tap_details')}</p>
-        </div>
-      </button>
 
-      <WaterTracker selectedDate={selectedDate} user={user} updateUser={updateUser} />
-
-      <div className="mb-6">
-        <CalendarProgress
-          mealsByDate={mealsByDate}
-          selectedDate={selectedDate}
-          onSelectDate={setSelectedDate}
-          calorieTarget={targets.calories}
-        />
-      </div>
-
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-medium text-muted-foreground tracking-wide">{mealsHeader}</h2>
-        {isToday && (
-          <Link to="/log-meal" className="flex items-center gap-1 text-xs text-primary">
-            <Plus size={14} /> {t('dash.log_meal')}
-          </Link>
-        )}
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center py-8">
-          <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-        </div>
-      ) : dayMeals.length === 0 ? (
-        <div className="glass-card rounded-2xl p-8 text-center">
-          <p className="text-sm text-muted-foreground">{t('dash.no_meals')} {dateLabel}.</p>
-          {isToday && (
-            <Link to="/log-meal" className="inline-flex items-center gap-1 text-sm text-primary mt-2">
-              <Plus size={14} /> {t('dash.log_first')}
-            </Link>
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+            </div>
+          ) : dayMeals.length === 0 ? (
+            <div className="glass-card rounded-2xl p-8 text-center">
+              <p className="text-sm text-muted-foreground">{t('dash.no_meals')} {dateLabel}.</p>
+              {isToday && (
+                <Link to="/log-meal" className="inline-flex items-center gap-1 text-sm text-primary mt-2">
+                  <Plus size={14} /> {t('dash.log_first')}
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {dayMeals.map((meal) => (
+                <MealCard key={meal.id} meal={meal} onDelete={isToday ? handleDelete : undefined} />
+              ))}
+            </div>
           )}
         </div>
-      ) : (
-        <div className="space-y-3">
-          {dayMeals.map((meal) => (
-            <MealCard key={meal.id} meal={meal} onDelete={isToday ? handleDelete : undefined} />
-          ))}
-        </div>
-      )}
+      </PullToRefresh>
 
       <DailyStatsSheet
         open={showStats}
@@ -178,6 +189,6 @@ export default function Dashboard() {
         gender={user?.gender}
         selectedDate={selectedDate}
       />
-    </div>
+    </>
   );
 }

@@ -18,9 +18,9 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground no-bounce">
       <div className="max-w-md mx-auto min-h-screen relative">
-        <main className="pb-28">
+        <main className="pb-[calc(7rem+env(safe-area-inset-bottom))] no-bounce">
           <Outlet />
         </main>
         <BottomNav />

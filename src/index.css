@@ -36,6 +36,11 @@
     @apply border-border outline-ring/50;
   }
 
+  html, body {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
   body {
     @apply bg-background text-foreground font-body;
     -webkit-font-smoothing: antialiased;
@@ -45,6 +50,17 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
     letter-spacing: 0.02em;
+  }
+
+  button, a, [role="tab"], [role="link"], svg, .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input, textarea, [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
   }
 }
 
@@ -84,6 +100,19 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .no-bounce {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .animate-fade-in {

@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Loader2, X, Camera } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useLanguage } from '@/lib/LanguageContext';
 import PostCard from '@/components/PostCard';
 import CommentSection from '@/components/CommentSection';
+import MobileHeader from '@/components/MobileHeader';
+import PullToRefresh from '@/components/PullToRefresh';
 import { Button } from '@/components/ui/button';
 
 export default function Community() {
@@ -15,11 +17,15 @@ export default function Community() {
   const [showCreate, setShowCreate] = useState(false);
   const [expandedComments, setExpandedComments] = useState(null);
 
-  useEffect(() => {
-    base44.entities.CommunityPost.list('-created_date', 50)
-      .then(setPosts)
-      .finally(() => setLoading(false));
+  const fetchPosts = useCallback(async () => {
+    const data = await base44.entities.CommunityPost.list('-created_date', 50);
+    setPosts(data);
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   const handleDelete = async (post) => {
     await base44.entities.CommunityPost.delete(post.id);
@@ -27,44 +33,49 @@ export default function Community() {
   };
 
   return (
-    <div className="px-5 pt-12">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-heading font-light">{t('comm.title')}</h1>
-        <button onClick={() => setShowCreate(true)} className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center glow-gold active:scale-95 transition-transform">
-          <Plus size={20} />
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-        </div>
-      ) : posts.length === 0 ? (
-        <div className="glass-card rounded-2xl p-8 text-center">
-          <p className="text-sm text-muted-foreground">{t('comm.no_posts')}</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {posts.map((post) => (
-            <div key={post.id}>
-              <PostCard post={post} currentUserId={user?.id} onDelete={post.created_by_id === user?.id ? handleDelete : undefined} />
-              {expandedComments === post.id && (
-                <div className="mt-2">
-                  <CommentSection postId={post.id} currentUserId={user?.id} currentUser={user} />
-                </div>
-              )}
-              {expandedComments !== post.id && (
-                <button onClick={() => setExpandedComments(post.id)} className="text-xs text-primary px-4 pt-1">
-                  {t('comm.view_comments')}
-                </button>
-              )}
+    <>
+      <MobileHeader
+        title={t('comm.title')}
+        right={
+          <button onClick={() => setShowCreate(true)} className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center glow-gold active:scale-95 transition-transform">
+            <Plus size={20} />
+          </button>
+        }
+      />
+      <PullToRefresh onRefresh={fetchPosts}>
+        <div className="px-5">
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
             </div>
-          ))}
+          ) : posts.length === 0 ? (
+            <div className="glass-card rounded-2xl p-8 text-center">
+              <p className="text-sm text-muted-foreground">{t('comm.no_posts')}</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {posts.map((post) => (
+                <div key={post.id}>
+                  <PostCard post={post} currentUserId={user?.id} onDelete={post.created_by_id === user?.id ? handleDelete : undefined} />
+                  {expandedComments === post.id && (
+                    <div className="mt-2">
+                      <CommentSection postId={post.id} currentUserId={user?.id} currentUser={user} />
+                    </div>
+                  )}
+                  {expandedComments !== post.id && (
+                    <button onClick={() => setExpandedComments(post.id)} className="text-xs text-primary px-4 pt-1">
+                      {t('comm.view_comments')}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </PullToRefresh>
 
       {showCreate && <CreatePostModal user={user} onClose={() => setShowCreate(false)} onPosted={(p) => { setPosts((prev) => [p, ...prev]); setShowCreate(false); }} />}
-    </div>
+    </>
   );
 }
 
