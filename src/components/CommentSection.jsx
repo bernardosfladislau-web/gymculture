@@ -17,21 +17,39 @@ export default function CommentSection({ postId, currentUserId, currentUser }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
-    const comment = await base44.entities.Comment.create({
+    const content = text.trim();
+    const tempId = `temp_${Date.now()}`;
+    const optimisticComment = {
+      id: tempId,
       post_id: postId,
-      content: text.trim(),
+      content,
       author_name: currentUser?.full_name,
       author_avatar_url: currentUser?.avatar_url,
-    });
-    setComments((c) => [...c, comment]);
+    };
+    setComments((c) => [...c, optimisticComment]);
     setText('');
-    await base44.entities.CommunityPost.update(postId, { comment_count: (comments.length + 1) });
+    try {
+      const comment = await base44.entities.Comment.create({
+        post_id: postId,
+        content,
+        author_name: currentUser?.full_name,
+        author_avatar_url: currentUser?.avatar_url,
+      });
+      setComments((c) => c.map((cm) => (cm.id === tempId ? comment : cm)));
+      await base44.entities.CommunityPost.update(postId, { comment_count: comments.length + 1 });
+    } catch {
+      setComments((c) => c.filter((cm) => cm.id !== tempId));
+    }
   };
 
   const handleDelete = async (comment) => {
-    await base44.entities.Comment.delete(comment.id);
     setComments((c) => c.filter((cm) => cm.id !== comment.id));
-    await base44.entities.CommunityPost.update(postId, { comment_count: comments.length - 1 });
+    try {
+      await base44.entities.Comment.delete(comment.id);
+      await base44.entities.CommunityPost.update(postId, { comment_count: comments.length - 1 });
+    } catch {
+      setComments((c) => [...c, comment]);
+    }
   };
 
   if (loading) return <p className="text-xs text-muted-foreground px-4 py-2">Loading...</p>;

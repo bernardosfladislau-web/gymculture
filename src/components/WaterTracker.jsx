@@ -72,15 +72,26 @@ export default function WaterTracker({ selectedDate, user, updateUser }) {
   const consumed = waterLogs.reduce((sum, log) => sum + (log.amount_ml || 0), 0);
 
   const addWater = async (amount) => {
-    const log = await base44.entities.WaterLog.create({ log_date: selectedDate, amount_ml: amount });
-    setWaterLogs((prev) => [log, ...prev]);
+    const tempId = `temp_${Date.now()}`;
+    const optimisticLog = { id: tempId, log_date: selectedDate, amount_ml: amount };
+    setWaterLogs((prev) => [optimisticLog, ...prev]);
+    try {
+      const log = await base44.entities.WaterLog.create({ log_date: selectedDate, amount_ml: amount });
+      setWaterLogs((prev) => prev.map((l) => (l.id === tempId ? log : l)));
+    } catch {
+      setWaterLogs((prev) => prev.filter((l) => l.id !== tempId));
+    }
   };
 
   const undoLast = async () => {
     if (waterLogs.length === 0) return;
     const last = waterLogs[0];
-    await base44.entities.WaterLog.delete(last.id);
     setWaterLogs((prev) => prev.filter((l) => l.id !== last.id));
+    try {
+      await base44.entities.WaterLog.delete(last.id);
+    } catch {
+      setWaterLogs((prev) => [last, ...prev]);
+    }
   };
 
   if (!user) return null;
