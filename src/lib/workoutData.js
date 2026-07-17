@@ -15,7 +15,6 @@ export const MUSCLE_GROUPS = [
 export const SPLIT_TYPES = {
   push_pull_legs: { label: 'Push / Pull / Legs' },
   upper_lower: { label: 'Upper / Lower' },
-  bro_split: { label: 'Bro Split' },
   full_body: { label: 'Full Body' },
   custom: { label: 'Custom' },
 };
@@ -51,18 +50,6 @@ export const SPLIT_PRESETS = {
       { day: 3, is_workout_day: false, muscle_groups: [] },
       { day: 4, is_workout_day: true, muscle_groups: ['chest', 'back', 'shoulders', 'biceps', 'triceps'] },
       { day: 5, is_workout_day: true, muscle_groups: ['quads', 'hamstrings', 'glutes', 'calves'] },
-      { day: 6, is_workout_day: false, muscle_groups: [] },
-      { day: 0, is_workout_day: false, muscle_groups: [] },
-    ],
-  },
-  bro_split: {
-    days: 5,
-    schedule: [
-      { day: 1, is_workout_day: true, muscle_groups: ['chest'] },
-      { day: 2, is_workout_day: true, muscle_groups: ['back'] },
-      { day: 3, is_workout_day: true, muscle_groups: ['shoulders'] },
-      { day: 4, is_workout_day: true, muscle_groups: ['biceps', 'triceps'] },
-      { day: 5, is_workout_day: true, muscle_groups: ['quads', 'hamstrings', 'calves'] },
       { day: 6, is_workout_day: false, muscle_groups: [] },
       { day: 0, is_workout_day: false, muscle_groups: [] },
     ],
