@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Heart, MessageCircle, Share2, Trash2, User } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getRelativeTime } from '@/lib/relativeTime';
@@ -35,20 +36,22 @@ export default function PostCard({ post, currentUserId, onDelete }) {
   return (
     <div className="glass-card rounded-2xl overflow-hidden animate-fade-in">
       <div className="flex items-center gap-3 p-4">
-        {post.author_avatar_url && !avatarError ? (
-          <img
-            src={post.author_avatar_url}
-            alt={post.author_name}
-            className="w-9 h-9 rounded-full object-cover"
-            onError={() => setAvatarError(true)}
-          />
-        ) : (
-          <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
-            <User size={16} className="text-muted-foreground" />
-          </div>
-        )}
+        <Link to={`/profile/${post.created_by_id}`} className="flex items-center gap-3 min-w-0 flex-shrink-0">
+          {post.author_avatar_url && !avatarError ? (
+            <img
+              src={post.author_avatar_url}
+              alt={post.author_name}
+              className="w-9 h-9 rounded-full object-cover"
+              onError={() => setAvatarError(true)}
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center">
+              <User size={16} className="text-muted-foreground" />
+            </div>
+          )}
+        </Link>
         <div className="flex-1 min-w-0">
-          <span className="text-sm font-medium">{post.author_name || t('comm.unknown')}</span>
+          <Link to={`/profile/${post.created_by_id}`} className="text-sm font-medium hover:text-primary transition-colors">{post.author_name || t('comm.unknown')}</Link>
           <span className="text-[11px] text-muted-foreground ml-2">{getRelativeTime(post.created_date)}</span>
         </div>
         {post.created_by_id === currentUserId && onDelete && (
