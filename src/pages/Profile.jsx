@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, Lock, Globe, Loader2, Camera, Dumbbell } from 'lucide-react';
+import { Settings, Lock, Globe, Loader2, Camera, Dumbbell, ArrowLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -121,6 +121,12 @@ export default function Profile() {
 
   return (
     <div className="px-5 pt-12 pb-4">
+      {!isOwnProfile && (
+        <button onClick={() => navigate('/profile')} className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors animate-fade-in">
+          <ArrowLeft size={18} />
+          <span>My Profile</span>
+        </button>
+      )}
       <div className="flex items-start gap-4 mb-6 animate-fade-in">
         <div className="relative">
           {profileUser.avatar_url && !avatarError ? (
