@@ -158,7 +158,7 @@ export default function Onboarding() {
                 className={`w-full text-left p-4 rounded-2xl border transition-all ${form.goal_type === key ? 'border-primary bg-primary/10' : 'border-border'}`}>
                 <span className="text-sm font-medium block">{val.label}</span>
                 <span className="text-xs text-muted-foreground">{val.description}</span>
-                {key === 'deficit_aggressive' && (
+                {(key === 'deficit_aggressive' || key === 'surplus_aggressive') && (
                   <span className="block mt-2 text-xs text-amber-500">
                     Recommended for experienced lifters only
                   </span>

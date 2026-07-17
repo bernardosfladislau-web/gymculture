@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, Lock, Globe, Loader2, Camera } from 'lucide-react';
+import { Settings, Lock, Globe, Loader2, Camera, Dumbbell } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -177,6 +177,10 @@ export default function Profile() {
 
       {isOwnProfile ? (
         <div className="space-y-2 mb-6">
+          <button onClick={() => navigate('/workout-tracker')} className="w-full glass-card rounded-2xl p-4 flex items-center gap-3">
+            <Dumbbell size={18} className="text-primary" />
+            <span className="text-sm font-medium">Workout Tracker</span>
+          </button>
           <button onClick={() => setShowSettings(true)} className="w-full glass-card rounded-2xl p-4 flex items-center gap-3">
             <Settings size={18} className="text-primary" />
             <span className="text-sm font-medium">{t('settings.title')}</span>

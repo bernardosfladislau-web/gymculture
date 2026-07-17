@@ -1,0 +1,27 @@
+{
+  "name": "WorkoutPlan",
+  "type": "object",
+  "properties": {
+    "split_type": {
+      "type": "string",
+      "enum": [
+        "push_pull_legs",
+        "upper_lower",
+        "bro_split",
+        "full_body",
+        "custom"
+      ]
+    },
+    "days_per_week": {
+      "type": "number"
+    },
+    "weekly_schedule": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "split_type",
+    "days_per_week",
+    "weekly_schedule"
+  ]
+}

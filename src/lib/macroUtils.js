@@ -11,6 +11,7 @@ export const GOAL_TYPES = {
   deficit_moderate: { label: 'Moderate Deficit', adjustment: -300, description: '300 cal below maintenance' },
   maintain: { label: 'Maintain Weight', adjustment: 0, description: 'Eat at maintenance to keep your current weight' },
   surplus: { label: 'Surplus', adjustment: 250, description: '200-300 cal above maintenance' },
+  surplus_aggressive: { label: 'Aggressive Bulk', adjustment: 550, description: '500-600 cal above maintenance — experienced lifters only' },
 };
 
 export function calculateBMR(weightLbs, heightIn, age, gender, bodyFatPct) {

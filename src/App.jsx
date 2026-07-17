@@ -19,6 +19,7 @@ import NutritionItemDetail from '@/pages/NutritionItemDetail';
 import Profile from '@/pages/Profile';
 import SubmitRecipe from '@/pages/SubmitRecipe';
 import AdminPanel from '@/pages/AdminPanel';
+import WorkoutTracker from '@/pages/WorkoutTracker';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -62,6 +63,7 @@ const AuthenticatedApp = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:id" element={<Profile />} />
         <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/workout-tracker" element={<WorkoutTracker />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
