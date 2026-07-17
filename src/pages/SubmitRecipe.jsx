@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Camera, Loader2, Check } from 'lucide-react';
+import { ChevronLeft, Camera, Loader2, Check, ChevronDown } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { Button } from '@/components/ui/button';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 
 const CATEGORIES = [
   { value: 'protein', label: 'Protein' },
@@ -33,6 +34,7 @@ export default function SubmitRecipe() {
   const [photoUrl, setPhotoUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showCategoryDrawer, setShowCategoryDrawer] = useState(false);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -79,14 +81,11 @@ export default function SubmitRecipe() {
       <div className="space-y-5">
         <div>
           <label className="text-sm font-medium mb-2 block">Category</label>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((c) => (
-              <button key={c.value} onClick={() => set('category', c.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${form.category === c.value ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground'}`}>
-                {c.label}
-              </button>
-            ))}
-          </div>
+          <button onClick={() => setShowCategoryDrawer(true)}
+            className="w-full glass-card rounded-2xl px-4 py-3 flex items-center justify-between active:scale-[0.98] transition-transform">
+            <span className="text-sm font-medium">{CATEGORIES.find((c) => c.value === form.category)?.label || 'Protein'}</span>
+            <ChevronDown size={16} className="text-muted-foreground" />
+          </button>
         </div>
 
         <div>
@@ -138,6 +137,22 @@ export default function SubmitRecipe() {
           Submit for Review
         </Button>
       </div>
+
+      <Drawer open={showCategoryDrawer} onOpenChange={setShowCategoryDrawer}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Category</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] space-y-1">
+            {CATEGORIES.map((c) => (
+              <button key={c.value} onClick={() => { set('category', c.value); setShowCategoryDrawer(false); }}
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors ${form.category === c.value ? 'bg-primary/10 text-primary' : 'hover:bg-secondary/50'}`}>
+                {c.label}
+              </button>
+            ))}
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

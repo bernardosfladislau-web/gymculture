@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, Search, Scale, Loader2, Check } from 'lucide-react';
+import { Camera, Search, Scale, Loader2, Check, ChevronDown } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { Button } from '@/components/ui/button';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 
 const MEAL_TYPES = [
   { value: 'breakfast', label: 'Breakfast' },
@@ -34,6 +35,7 @@ export default function LogMeal() {
   const [searchQuery, setSearchQuery] = useState('');
   const [brand, setBrand] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showMealDrawer, setShowMealDrawer] = useState(false);
   const fileRef = useRef(null);
 
   const today = new Date().toISOString().split('T')[0];
@@ -188,14 +190,11 @@ export default function LogMeal() {
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-2 block">Meal Type</label>
-              <div className="flex gap-2">
-                {MEAL_TYPES.map((t) => (
-                  <button key={t.value} onClick={() => setResult({ ...result, meal_type: t.value })}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${(result.meal_type || 'snack') === t.value ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground'}`}>
-                    {t.label}
-                  </button>
-                ))}
-              </div>
+              <button onClick={() => setShowMealDrawer(true)}
+                className="w-full glass-card rounded-2xl px-4 py-3 flex items-center justify-between active:scale-[0.98] transition-transform">
+                <span className="text-sm font-medium">{MEAL_TYPES.find((t) => t.value === (result.meal_type || 'snack'))?.label || 'Snack'}</span>
+                <ChevronDown size={16} className="text-muted-foreground" />
+              </button>
             </div>
           </div>
           <Button onClick={handleSave} disabled={saving} className="w-full bg-primary text-primary-foreground">
@@ -204,6 +203,22 @@ export default function LogMeal() {
           </Button>
         </div>
       )}
+
+      <Drawer open={showMealDrawer} onOpenChange={setShowMealDrawer}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Meal Type</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] space-y-1">
+            {MEAL_TYPES.map((t) => (
+              <button key={t.value} onClick={() => { setResult({ ...result, meal_type: t.value }); setShowMealDrawer(false); }}
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors ${(result?.meal_type || 'snack') === t.value ? 'bg-primary/10 text-primary' : 'hover:bg-secondary/50'}`}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

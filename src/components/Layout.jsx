@@ -1,5 +1,6 @@
-import { Outlet, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import AnimatedOutlet from './AnimatedOutlet';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 export default function Layout() {
@@ -20,8 +21,8 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-background text-foreground no-bounce">
       <div className="max-w-md mx-auto min-h-screen relative">
-        <main className="pb-[calc(7rem+env(safe-area-inset-bottom))] no-bounce">
-          <Outlet />
+        <main className="relative pb-[calc(7rem+env(safe-area-inset-bottom))] no-bounce overflow-x-hidden">
+          <AnimatedOutlet />
         </main>
         <BottomNav />
       </div>
