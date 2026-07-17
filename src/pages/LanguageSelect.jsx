@@ -8,7 +8,6 @@ export default function LanguageSelect() {
 
   const handleContinue = () => {
     changeLanguage(selected);
-    window.location.reload();
   };
 
   return (

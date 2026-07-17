@@ -6,15 +6,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 
 export default function SettingsSheet({ open, onOpenChange, onNavigate }) {
-  const { t } = useLanguage();
+  const { t, resetLanguage } = useLanguage();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   if (!open) return null;
 
   const handleChangeLanguage = () => {
-    localStorage.removeItem('app_language');
-    window.location.reload();
+    onOpenChange(false);
+    resetLanguage();
   };
 
   const handleChangeGoals = () => {

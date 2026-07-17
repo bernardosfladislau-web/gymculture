@@ -21,13 +21,20 @@ export function LanguageProvider({ children }) {
     document.documentElement.dir = code === 'ar' ? 'rtl' : 'ltr';
   }, []);
 
+  const resetLanguage = useCallback(() => {
+    setLang(null);
+    localStorage.removeItem('app_language');
+    document.documentElement.lang = '';
+    document.documentElement.dir = 'ltr';
+  }, []);
+
   const t = useCallback(
     (key) => extraTranslations[lang]?.[key] || translations[lang]?.[key] || extraTranslations.en?.[key] || translations.en[key] || key,
     [lang]
   );
 
   return (
-    <LanguageContext.Provider value={{ lang, changeLanguage, t, languages: LANGUAGES }}>
+    <LanguageContext.Provider value={{ lang, changeLanguage, resetLanguage, t, languages: LANGUAGES }}>
       {children}
     </LanguageContext.Provider>
   );
