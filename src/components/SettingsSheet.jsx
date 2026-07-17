@@ -1,9 +1,14 @@
+import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useLanguage } from '@/lib/LanguageContext';
 import { Settings as SettingsIcon, LogOut, Trash2, Globe, Target, ChevronRight } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 export default function SettingsSheet({ open, onOpenChange, onNavigate }) {
   const { t } = useLanguage();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   if (!open) return null;
 
@@ -22,8 +27,12 @@ export default function SettingsSheet({ open, onOpenChange, onNavigate }) {
     base44.auth.logout('/login');
   };
 
-  const handleDeleteAccount = async () => {
-    if (!window.confirm(t('settings.delete_confirm'))) return;
+  const handleDeleteAccount = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    setDeleting(true);
     try {
       const me = await base44.auth.me();
       await Promise.all([
@@ -38,11 +47,13 @@ export default function SettingsSheet({ open, onOpenChange, onNavigate }) {
     } catch {
       // proceed with logout regardless
     }
+    setShowDeleteConfirm(false);
     onOpenChange(false);
     base44.auth.logout('/login');
   };
 
   return (
+    <>
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end justify-center" onClick={() => onOpenChange(false)}>
       <div className="glass-card rounded-t-3xl w-full max-w-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] animate-fade-in" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-2 mb-6">
@@ -75,5 +86,25 @@ export default function SettingsSheet({ open, onOpenChange, onNavigate }) {
         </div>
       </div>
     </div>
+
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-heading font-light">{t('settings.delete_account')}</DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              {t('settings.delete_confirm')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-2 pt-4">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="flex-1">
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteAccount} disabled={deleting} className="flex-1">
+              {deleting ? 'Deleting...' : t('settings.delete_account')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
