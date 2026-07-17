@@ -5,8 +5,8 @@ export default function MobileHeader({ title, showBack = false, onBack, right, l
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border/30">
-      <div className="px-5 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-3">
+    <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border/30 pt-[env(safe-area-inset-top)]">
+      <div className="px-5 pt-3 pb-3">
         <div className="flex items-center justify-between h-7">
           {showBack ? (
             <button

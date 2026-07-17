@@ -79,7 +79,7 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <div className="max-w-md mx-auto w-full flex-1 flex flex-col px-6 pt-16 pb-[calc(2rem+env(safe-area-inset-bottom))]">
+      <div className="max-w-md mx-auto w-full flex-1 flex flex-col px-6 pt-[calc(4rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))]">
         <div className="flex items-center gap-2 mb-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? 'bg-primary' : 'bg-border'}`} />
