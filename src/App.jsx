@@ -7,7 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import { TabHistoryProvider } from '@/lib/TabHistoryContext';
-import { LanguageProvider } from '@/lib/LanguageContext';
+import { LanguageProvider, useLanguage } from '@/lib/LanguageContext';
 import LanguageSelect from '@/pages/LanguageSelect';
 import Layout from '@/components/Layout';
 import Onboarding from '@/pages/Onboarding';
@@ -29,6 +29,7 @@ import ResetPassword from '@/pages/ResetPassword';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated } = useAuth();
+  const { lang } = useLanguage();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -43,7 +44,7 @@ const AuthenticatedApp = () => {
   }
 
   // Authenticated users must select a language before entering the app
-  if (isAuthenticated && !localStorage.getItem('app_language')) {
+  if (isAuthenticated && !lang) {
     return <LanguageSelect />;
   }
 
