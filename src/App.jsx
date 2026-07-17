@@ -25,10 +25,6 @@ import WorkoutTracker from '@/pages/WorkoutTracker';
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  if (!localStorage.getItem('app_language')) {
-    return <LanguageSelect />;
-  }
-
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -43,10 +39,14 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
+  }
+
+  // Authenticated — now check language preference
+  if (!localStorage.getItem('app_language')) {
+    return <LanguageSelect />;
   }
 
   // Render the main app
