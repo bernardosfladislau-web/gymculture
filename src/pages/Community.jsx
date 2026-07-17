@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Plus, Loader2, X, Camera } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -85,6 +86,7 @@ function CreatePostModal({ user, onClose, onPosted }) {
   const [photoUrl, setPhotoUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleUpload = async (file) => {
     setUploading(true);
@@ -99,6 +101,7 @@ function CreatePostModal({ user, onClose, onPosted }) {
   const handlePost = async () => {
     if (!text.trim() && !photoUrl) return;
     setPosting(true);
+    setError('');
     try {
       const post = await base44.entities.CommunityPost.create({
         post_type: photoUrl ? 'meal_photo' : 'text',
@@ -110,12 +113,14 @@ function CreatePostModal({ user, onClose, onPosted }) {
         comment_count: 0,
       });
       onPosted(post);
+    } catch (e) {
+      setError(e.message || 'Failed to create post');
     } finally {
       setPosting(false);
     }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm flex items-end sm:items-center justify-center" onClick={onClose}>
       <div className="glass-card rounded-t-3xl sm:rounded-3xl w-full max-w-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] animate-fade-in" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
@@ -125,6 +130,7 @@ function CreatePostModal({ user, onClose, onPosted }) {
         <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t('comm.share')}
           rows={3} className="w-full glass-card rounded-2xl px-4 py-3 bg-transparent outline-none focus:border-primary/50 border border-border/50 text-sm resize-none" />
         {photoUrl && <img src={photoUrl} alt="preview" className="w-full max-h-64 object-contain rounded-2xl mt-3" />}
+        {error && <p className="text-xs text-destructive mt-3">{error}</p>}
         <div className="flex items-center gap-3 mt-4">
           <label className="cursor-pointer">
             <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0])} />
@@ -137,6 +143,7 @@ function CreatePostModal({ user, onClose, onPosted }) {
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
