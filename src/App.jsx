@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -20,12 +20,16 @@ import Profile from '@/pages/Profile';
 import SubmitRecipe from '@/pages/SubmitRecipe';
 import AdminPanel from '@/pages/AdminPanel';
 import WorkoutTracker from '@/pages/WorkoutTracker';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import ForgotPassword from '@/pages/ForgotPassword';
+import ResetPassword from '@/pages/ResetPassword';
 // Add page imports here
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
@@ -34,36 +38,35 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
-    }
+  if (authError?.type === 'user_not_registered') {
+    return <UserNotRegisteredError />;
   }
 
-  // Authenticated — now check language preference
-  if (!localStorage.getItem('app_language')) {
+  // Authenticated users must select a language before entering the app
+  if (isAuthenticated && !localStorage.getItem('app_language')) {
     return <LanguageSelect />;
   }
 
-  // Render the main app
   return (
     <Routes>
-      <Route path="/onboarding" element={<Onboarding />} />
-      <Route element={<Layout />}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/log-meal" element={<LogMeal />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/nutrition-hub" element={<NutritionHub />} />
-        <Route path="/nutrition-hub/:id" element={<NutritionItemDetail />} />
-        <Route path="/submit-recipe" element={<SubmitRecipe />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/:id" element={<Profile />} />
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/workout-tracker" element={<WorkoutTracker />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route element={<Layout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/log-meal" element={<LogMeal />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/nutrition-hub" element={<NutritionHub />} />
+          <Route path="/nutrition-hub/:id" element={<NutritionItemDetail />} />
+          <Route path="/submit-recipe" element={<SubmitRecipe />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/workout-tracker" element={<WorkoutTracker />} />
+        </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
