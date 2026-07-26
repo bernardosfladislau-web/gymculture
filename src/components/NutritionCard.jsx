@@ -1,4 +1,7 @@
+import { useLanguage } from '@/lib/LanguageContext';
+
 export default function NutritionCard({ item, onClick }) {
+  const { t } = useLanguage();
   return (
     <button
       onClick={onClick}
@@ -8,8 +11,8 @@ export default function NutritionCard({ item, onClick }) {
       {item.diet_tags?.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-1.5">
           {item.diet_tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary capitalize">
-              {tag.replace('_', ' ')}
+            <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+              {t(`nutri.${tag}`)}
             </span>
           ))}
         </div>

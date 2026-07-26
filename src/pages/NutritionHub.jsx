@@ -29,8 +29,13 @@ export default function NutritionHub() {
       .then((all) => {
         const grouped = {};
         CATEGORIES.forEach((c) => { grouped[c.key] = []; });
+        const seen = new Set();
         all.forEach((item) => {
-          if (grouped[item.category]) grouped[item.category].push(item);
+          const key = `${item.category}:${item.name?.toLowerCase()}`;
+          if (grouped[item.category] && !seen.has(key)) {
+            grouped[item.category].push(item);
+            seen.add(key);
+          }
         });
         setItems(grouped);
       })

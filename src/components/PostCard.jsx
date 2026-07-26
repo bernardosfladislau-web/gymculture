@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, MessageCircle, Share2, Trash2, User } from 'lucide-react';
+import { Heart, MessageCircle, Trash2, User } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getRelativeTime } from '@/lib/relativeTime';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -76,9 +76,7 @@ export default function PostCard({ post, currentUserId, onDelete }) {
             <MessageCircle size={20} className="text-muted-foreground" />
             <span className="text-muted-foreground">{post.comment_count || 0}</span>
           </button>
-          <button className="ml-auto">
-            <Share2 size={18} className="text-muted-foreground" />
-          </button>
+
         </div>
       </div>
     </div>
