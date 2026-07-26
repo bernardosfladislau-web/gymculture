@@ -6,6 +6,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 import NutritionCard from '@/components/NutritionCard';
 import NutritionCarousel from '@/components/NutritionCarousel';
 import NutritionDietFilter from '@/components/NutritionDietFilter';
+import { translateNutritionItems } from '@/lib/translateNutrition';
 
 const CATEGORIES = [
   { key: 'protein', labelKey: 'nutri.proteins' },
@@ -18,7 +19,7 @@ const CATEGORIES = [
 ];
 
 export default function NutritionHub() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const [items, setItems] = useState({});
   const [loading, setLoading] = useState(true);
@@ -26,21 +27,29 @@ export default function NutritionHub() {
 
   useEffect(() => {
     base44.entities.NutritionItem.filter({ status: 'approved' }, '-created_date', 100)
-      .then((all) => {
+      .then(async (all) => {
         const grouped = {};
         CATEGORIES.forEach((c) => { grouped[c.key] = []; });
         const seen = new Set();
+        const unique = [];
         all.forEach((item) => {
           const key = `${item.category}:${item.name?.toLowerCase()}`;
           if (grouped[item.category] && !seen.has(key)) {
             grouped[item.category].push(item);
             seen.add(key);
+            unique.push(item);
           }
+        });
+        const translated = await translateNutritionItems(unique, lang);
+        const translatedMap = {};
+        translated.forEach(i => { translatedMap[i.id] = i; });
+        Object.keys(grouped).forEach(cat => {
+          grouped[cat] = grouped[cat].map(i => translatedMap[i.id] || i);
         });
         setItems(grouped);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [lang]);
 
   const filterByDiet = (list) => {
     if (dietFilter === 'all') return list;

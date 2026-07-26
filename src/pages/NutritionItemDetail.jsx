@@ -4,6 +4,7 @@ import { Flame, Beef, Droplet, Wheat } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useLanguage } from '@/lib/LanguageContext';
 import MobileHeader from '@/components/MobileHeader';
+import { translateNutritionItems } from '@/lib/translateNutrition';
 
 const CATEGORY_LABELS = {
   protein: 'nutri.proteins',
@@ -16,7 +17,7 @@ const CATEGORY_LABELS = {
 };
 
 export default function NutritionItemDetail() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
@@ -24,9 +25,12 @@ export default function NutritionItemDetail() {
 
   useEffect(() => {
     base44.entities.NutritionItem.get(id)
-      .then(setItem)
+      .then(async (fetched) => {
+        const translated = await translateNutritionItems([fetched], lang);
+        setItem(translated[0]);
+      })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, lang]);
 
   const goBack = () => navigate('/nutrition-hub');
 
