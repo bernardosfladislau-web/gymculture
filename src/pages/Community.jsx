@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Loader2, X, Camera } from 'lucide-react';
+import { Plus, Loader2, X, Camera, Video } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -82,31 +82,37 @@ export default function Community() {
 
 function CreatePostModal({ user, onClose, onPosted }) {
   const { t } = useLanguage();
+  const [mode, setMode] = useState('post');
+  const [title, setTitle] = useState('');
   const [text, setText] = useState('');
   const [photoUrl, setPhotoUrl] = useState(null);
+  const [videoUrl, setVideoUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleUpload = async (file) => {
+  const handleUpload = async (file, kind) => {
     setUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setPhotoUrl(file_url);
+      if (kind === 'video') setVideoUrl(file_url);
+      else setPhotoUrl(file_url);
     } finally {
       setUploading(false);
     }
   };
 
   const handlePost = async () => {
-    if (!text.trim() && !photoUrl) return;
+    if (mode === 'forum' ? !title.trim() : (!text.trim() && !photoUrl && !videoUrl)) return;
     setPosting(true);
     setError('');
     try {
       const post = await base44.entities.CommunityPost.create({
-        post_type: photoUrl ? 'meal_photo' : 'text',
+        post_type: mode === 'forum' ? 'forum' : (photoUrl || videoUrl ? 'meal_photo' : 'text'),
+        title: mode === 'forum' ? title.trim() : undefined,
         content: text.trim() || undefined,
         photo_url: photoUrl || undefined,
+        video_url: videoUrl || undefined,
         author_name: user?.full_name,
         author_avatar_url: user?.avatar_url,
         like_count: 0,
@@ -120,26 +126,45 @@ function CreatePostModal({ user, onClose, onPosted }) {
     }
   };
 
+  const canPost = mode === 'forum' ? !!title.trim() : (text.trim() || photoUrl || videoUrl);
+
   return createPortal(
     <div className="fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm flex items-end sm:items-center justify-center" onClick={onClose}>
       <div className="glass-card rounded-t-3xl sm:rounded-3xl w-full max-w-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] animate-fade-in" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-heading font-light">{t('comm.new_post')}</h2>
+          <h2 className="text-lg font-heading font-light">{mode === 'forum' ? t('comm.new_forum') : t('comm.new_post')}</h2>
           <button onClick={onClose}><X size={20} className="text-muted-foreground" /></button>
         </div>
-        <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t('comm.share')}
+
+        <div className="flex gap-2 mb-4 p-1 glass-card rounded-full">
+          <button onClick={() => setMode('post')} className={`flex-1 py-1.5 rounded-full text-xs font-medium transition-colors ${mode === 'post' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}>{t('comm.post')}</button>
+          <button onClick={() => setMode('forum')} className={`flex-1 py-1.5 rounded-full text-xs font-medium transition-colors ${mode === 'forum' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}>{t('comm.forum')}</button>
+        </div>
+
+        {mode === 'forum' && (
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('comm.forum_title_placeholder')}
+            className="w-full glass-card rounded-2xl px-4 py-3 bg-transparent outline-none focus:border-primary/50 border border-border/50 text-sm mb-3 font-medium" />
+        )}
+        <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={mode === 'forum' ? t('comm.forum_desc_placeholder') : t('comm.share')}
           rows={3} className="w-full glass-card rounded-2xl px-4 py-3 bg-transparent outline-none focus:border-primary/50 border border-border/50 text-sm resize-none" />
         {photoUrl && <img src={photoUrl} alt="preview" className="w-full max-h-64 object-contain rounded-2xl mt-3" />}
+        {videoUrl && <video src={videoUrl} controls className="w-full max-h-64 object-contain rounded-2xl mt-3" />}
         {error && <p className="text-xs text-destructive mt-3">{error}</p>}
         <div className="flex items-center gap-3 mt-4">
           <label className="cursor-pointer">
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0])} />
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0], 'photo')} />
             <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
               {uploading ? <Loader2 size={18} className="animate-spin text-primary" /> : <Camera size={18} className="text-muted-foreground" />}
             </div>
           </label>
-          <Button onClick={handlePost} disabled={posting || (!text.trim() && !photoUrl)} className="flex-1 bg-primary text-primary-foreground">
-            {posting ? <Loader2 size={18} className="animate-spin" /> : t('comm.post')}
+          <label className="cursor-pointer">
+            <input type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files[0] && handleUpload(e.target.files[0], 'video')} />
+            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+              <Video size={18} className="text-muted-foreground" />
+            </div>
+          </label>
+          <Button onClick={handlePost} disabled={posting || uploading || !canPost} className="flex-1 bg-primary text-primary-foreground">
+            {posting ? <Loader2 size={18} className="animate-spin" /> : (mode === 'forum' ? t('comm.create_forum') : t('comm.post'))}
           </Button>
         </div>
       </div>

@@ -61,11 +61,18 @@ export default function PostCard({ post, currentUserId, onDelete }) {
         )}
       </div>
 
-      {post.post_type !== 'text' && post.photo_url && !imgError && (
+      {post.video_url && (
+        <video src={post.video_url} controls playsInline className="w-full max-h-[60vh] bg-black" />
+      )}
+      {!post.video_url && post.post_type !== 'text' && post.photo_url && !imgError && (
         <img src={post.photo_url} alt="post" className="w-full aspect-square object-cover" onError={() => setImgError(true)} />
       )}
 
       <div className="p-4">
+        {post.post_type === 'forum' && (
+          <span className="inline-block text-[10px] uppercase tracking-wide text-primary bg-primary/10 px-2 py-0.5 rounded-full mb-2">{t('comm.forum')}</span>
+        )}
+        {post.title && <h3 className="text-lg font-heading font-medium mb-1.5 leading-snug">{post.title}</h3>}
         {post.content && <p className="text-sm text-foreground/90 mb-3 whitespace-pre-wrap">{post.content}</p>}
         <div className="flex items-center gap-5">
           <button onClick={handleLike} className="flex items-center gap-1.5 text-sm transition-colors">
