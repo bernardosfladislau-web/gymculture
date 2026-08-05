@@ -103,7 +103,7 @@ function CreatePostModal({ user, onClose, onPosted }) {
   };
 
   const handlePost = async () => {
-    if (mode === 'forum' ? !title.trim() : (!text.trim() && !photoUrl && !videoUrl)) return;
+    if (mode === 'forum' ? !title.trim() : (!photoUrl && !videoUrl)) return;
     setPosting(true);
     setError('');
     try {
@@ -126,7 +126,7 @@ function CreatePostModal({ user, onClose, onPosted }) {
     }
   };
 
-  const canPost = mode === 'forum' ? !!title.trim() : (text.trim() || photoUrl || videoUrl);
+  const canPost = mode === 'forum' ? !!title.trim() : (photoUrl || videoUrl);
 
   return createPortal(
     <div className="fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm flex items-end sm:items-center justify-center" onClick={onClose}>
@@ -145,8 +145,10 @@ function CreatePostModal({ user, onClose, onPosted }) {
           <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('comm.forum_title_placeholder')}
             className="w-full glass-card rounded-2xl px-4 py-3 bg-transparent outline-none focus:border-primary/50 border border-border/50 text-sm mb-3 font-medium" />
         )}
-        <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={mode === 'forum' ? t('comm.forum_desc_placeholder') : t('comm.share')}
-          rows={3} className="w-full glass-card rounded-2xl px-4 py-3 bg-transparent outline-none focus:border-primary/50 border border-border/50 text-sm resize-none" />
+        {mode === 'forum' && (
+          <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t('comm.forum_desc_placeholder')}
+            rows={3} className="w-full glass-card rounded-2xl px-4 py-3 bg-transparent outline-none focus:border-primary/50 border border-border/50 text-sm resize-none" />
+        )}
         {photoUrl && <img src={photoUrl} alt="preview" className="w-full max-h-64 object-contain rounded-2xl mt-3" />}
         {videoUrl && <video src={videoUrl} controls className="w-full max-h-64 object-contain rounded-2xl mt-3" />}
         {error && <p className="text-xs text-destructive mt-3">{error}</p>}
