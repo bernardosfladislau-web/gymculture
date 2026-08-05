@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Settings, Lock, Globe, Loader2, Camera, Dumbbell, ArrowLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -11,12 +12,10 @@ export default function Profile() {
   const { t } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user: currentUser, updateUser, refetch } = useCurrentUser();
-  const [profileUser, setProfileUser] = useState(null);
+  const { user: currentUser, updateUser } = useCurrentUser();
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [followStatus, setFollowStatus] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [bio, setBio] = useState('');
@@ -30,16 +29,16 @@ export default function Profile() {
   const isOwnProfile = !id || id === currentUser?.id;
   const targetId = id || currentUser?.id;
 
+  const { data: fetchedUser } = useQuery({
+    queryKey: ['profileUser', targetId],
+    queryFn: () => base44.entities.User.get(targetId),
+    enabled: !!targetId && !isOwnProfile,
+    staleTime: 5 * 60 * 1000,
+  });
+  const profileUser = isOwnProfile ? currentUser : fetchedUser;
+
   useEffect(() => {
     if (!targetId) return;
-    setLoading(true);
-    const userFetch = isOwnProfile
-      ? base44.auth.me()
-      : base44.entities.User.get(targetId).catch(() => null);
-    userFetch.then((u) => {
-      setProfileUser(u);
-      setBio(u?.bio || '');
-    });
     base44.entities.CommunityPost.filter({ created_by_id: targetId }, '-created_date', 50).then(setPosts);
     base44.entities.Follow.filter({ following_id: targetId, status: 'accepted' }).then((folls) => {
       setFollowers(folls.map(f => ({ id: f.created_by_id, name: f.follower_name || f.following_name || 'User', avatar_url: f.follower_avatar_url })));
@@ -47,13 +46,18 @@ export default function Profile() {
     base44.entities.Follow.filter({ created_by_id: targetId, status: 'accepted' }).then((folls) => {
       setFollowing(folls.map(f => ({ id: f.following_id, name: f.following_name || 'User', avatar_url: null })));
     });
-    if (!isOwnProfile && currentUser) {
+    if (!isOwnProfile && currentUser?.id) {
       base44.entities.Follow.filter({ following_id: targetId, created_by_id: currentUser.id }).then((follows) => {
         setFollowStatus(follows[0]?.status || null);
       });
+    } else {
+      setFollowStatus(null);
     }
-    Promise.all([userFetch]).finally(() => setLoading(false));
-  }, [targetId, currentUser, isOwnProfile]);
+  }, [targetId, currentUser?.id, isOwnProfile]);
+
+  useEffect(() => {
+    setBio(profileUser?.bio || '');
+  }, [profileUser]);
 
   const handleFollow = async () => {
     if (!profileUser || !currentUser) return;
@@ -83,7 +87,6 @@ export default function Profile() {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       await updateUser({ avatar_url: file_url });
-      setProfileUser((u) => ({ ...u, avatar_url: file_url }));
     } finally {
       setAvatarUploading(false);
     }
@@ -92,27 +95,17 @@ export default function Profile() {
   const handleSaveBio = async () => {
     await updateUser({ bio });
     setEditMode(false);
-    setProfileUser((u) => ({ ...u, bio }));
   };
 
   const togglePrivacy = async () => {
     const newVal = !profileUser.is_private;
     await updateUser({ is_private: newVal });
-    setProfileUser((u) => ({ ...u, is_private: newVal }));
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   if (!profileUser) {
     return (
-      <div className="px-5 pt-12">
-        <p className="text-sm text-muted-foreground">{t('prof.not_found')}</p>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -230,9 +223,11 @@ export default function Profile() {
                 <div key={p.id} className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   {p.photo_url ? (
                     <img src={p.photo_url} alt="" className="w-full h-full object-cover" />
+                  ) : p.video_url ? (
+                    <video src={p.video_url} className="w-full h-full object-cover" muted />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center p-2">
-                      <p className="text-[10px] text-muted-foreground text-center line-clamp-3">{p.content}</p>
+                      <p className="text-[10px] text-muted-foreground text-center line-clamp-3">{p.title || p.content}</p>
                     </div>
                   )}
                 </div>
